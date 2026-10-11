@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vns.WorkSpace — Email Bulk Tool</title>
+  <style>
+    /* UI layer: one file keeps deployment simple and reduces cross-file dependency bugs. */
+    :root{--bg:#f5f7fb;--panel:#fff;--text:#172033;--muted:#718096;--line:#e7ebf2;--brand:#2563eb;--brand2:#1d4ed8;--success:#15803d;--warning:#b45309;--danger:#dc2626;--shadow:0 12px 35px rgba(31,41,55,.08);--radius:18px}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+    button,input,select{font:inherit}button{cursor:pointer;border:0}.app{display:flex;min-height:100vh}.sidebar{width:250px;background:#0f172a;color:#fff;padding:22px 16px;display:flex;flex-direction:column;position:fixed;inset:0 auto 0 0;z-index:20}.brand{display:flex;align-items:center;gap:11px;padding:4px 10px 26px}.brandMark{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#60a5fa,#2563eb);display:grid;place-items:center;font-weight:800}.brand strong{font-size:17px}.brand small{display:block;color:#94a3b8;font-size:11px;margin-top:2px}.nav{display:grid;gap:7px}.nav button{width:100%;text-align:left;padding:12px 13px;border-radius:11px;background:transparent;color:#cbd5e1;display:flex;align-items:center;gap:11px}.nav button.active,.nav button:hover{background:#1e293b;color:#fff}.sideFooter{margin-top:auto;border-top:1px solid #243044;padding:15px 10px;color:#94a3b8;font-size:12px;line-height:1.5}.poweredLabel{display:block;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8}.poweredBrand{display:block;margin-top:3px;font-size:13px;font-weight:800;letter-spacing:.01em;color:#f8fafc}.main{margin-left:250px;width:calc(100% - 250px);padding:28px;min-width:0}.topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:24px}.eyebrow{font-size:12px;color:var(--brand);font-weight:700;text-transform:uppercase;letter-spacing:.08em}.title{font-size:28px;margin:5px 0 0;font-weight:800}.subtitle{color:var(--muted);font-size:13px;margin-top:5px}.actions{display:flex;gap:10px;align-items:center}.btn{padding:11px 15px;border-radius:11px;background:#fff;border:1px solid var(--line);color:var(--text);font-weight:700}.btn:hover{border-color:#cbd5e1}.btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}.btn.primary:hover{background:var(--brand2)}.btn.danger{color:var(--danger)}.grid{display:grid;gap:16px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:18px}.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}.stat{padding:20px}.statTop{display:flex;justify-content:space-between;align-items:center}.statLabel{font-size:13px;color:var(--muted);font-weight:600}.icon{width:36px;height:36px;border-radius:10px;background:#eff6ff;color:var(--brand);display:grid;place-items:center;font-size:17px}.statValue{font-size:28px;font-weight:800;margin-top:12px}.statMeta{font-size:12px;color:var(--muted);margin-top:4px}.layout{grid-template-columns:minmax(0,1.7fr) minmax(300px,.8fr);align-items:start}.panel{padding:20px}.panelHead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}.panelTitle{font-weight:800}.tableWrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:650px}.table th,.table td{text-align:left;padding:13px 12px;border-bottom:1px solid var(--line);font-size:13px;white-space:nowrap}.table th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}.status{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:700}.status.sent{background:#ecfdf3;color:var(--success)}.status.failed{background:#fef2f2;color:var(--danger)}.status.pending{background:#fff7ed;color:var(--warning)}.quick{display:grid;gap:12px}.quickBtn{padding:15px;border:1px solid var(--line);border-radius:13px;background:#fff;text-align:left;display:flex;gap:12px;align-items:center}.quickBtn:hover{border-color:#bfdbfe;background:#f8fbff}.quickIcon{width:38px;height:38px;border-radius:10px;background:#eff6ff;color:var(--brand);display:grid;place-items:center}.quickText strong{display:block;font-size:13px}.quickText span{display:block;color:var(--muted);font-size:11px;margin-top:3px}.quota{margin-top:15px;padding:16px;border-radius:14px;background:#f8fafc;border:1px solid var(--line)}.quotaRow{display:flex;justify-content:space-between;font-size:12px}.bar{height:7px;background:#e5e7eb;border-radius:99px;margin-top:10px;overflow:hidden}.bar i{display:block;height:100%;background:var(--brand);border-radius:99px;width:0}.view{display:none}.view.active{display:block}.formGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{display:grid;gap:7px}.field.full{grid-column:1/-1}.field label{font-size:12px;font-weight:700;color:#475569}.field input,.field textarea,.field select{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:11px;outline:none;background:#fff;color:var(--text)}.field textarea{min-height:160px;resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{border-color:#93c5fd;box-shadow:0 0 0 3px #dbeafe}.sendPanel{max-width:950px}.hint{font-size:12px;color:var(--muted);line-height:1.6}.recipientList{max-height:410px;overflow:auto;border:1px solid var(--line);border-radius:12px}.recipient{display:grid;grid-template-columns:42px 1fr 110px;align-items:center;gap:10px;padding:11px 13px;border-bottom:1px solid var(--line)}.recipient:last-child{border-bottom:0}.recipient small{color:var(--muted)}.recipientToolbar{display:grid;grid-template-columns:minmax(220px,1fr) 180px auto;gap:10px;align-items:center;margin-bottom:16px}.recipientToolbar input,.recipientToolbar select{padding:11px 13px;border:1px solid var(--line);border-radius:11px;background:#fff;outline:none}.recipientToolbar input:focus,.recipientToolbar select:focus{border-color:#93c5fd;box-shadow:0 0 0 3px #dbeafe}.recipientStats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:16px}.recipientStat{padding:15px}.recipientStat .statValue{font-size:22px;margin-top:7px}.importBox{border:1px dashed #cbd5e1;border-radius:14px;padding:18px;background:#f8fafc}.importBox input[type=file]{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}.importMeta{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:12px}.importResult{margin-top:12px;padding:11px 13px;border-radius:10px;background:#eff6ff;color:#1e40af;font-size:12px;line-height:1.5}.recipientTable{max-height:520px;overflow:auto;border:1px solid var(--line);border-radius:12px}.recipientTable .table{min-width:760px}.emptyTable{padding:30px;text-align:center;color:var(--muted)}.spinner{display:inline-block;width:15px;height:15px;border:2px solid #cbd5e1;border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:7px}@keyframes spin{to{transform:rotate(360deg)}}.toast{position:fixed;right:22px;bottom:22px;background:#111827;color:#fff;padding:13px 16px;border-radius:12px;box-shadow:var(--shadow);font-size:13px;opacity:0;transform:translateY(10px);pointer-events:none;transition:.2s;z-index:50}.toast.show{opacity:1;transform:translateY(0)}.mobileMenu{display:none}
+
+    .filePickerRow{display:grid;grid-template-columns:minmax(120px,1fr) auto auto auto;gap:8px;align-items:center}.filePickerRow input[readonly]{min-width:0;background:#f8fafc}.filePickerRow .btn{padding:10px 12px;white-space:nowrap;font-size:12px}.visuallyHiddenFile{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}.filePickerNote{font-size:11px;color:var(--muted);margin-top:6px}@media(max-width:720px){.filePickerRow{grid-template-columns:1fr 1fr}.filePickerRow input[readonly]{grid-column:1/-1}.filePickerRow .btn{width:100%;white-space:normal}.filePickerRow .btn:last-child{grid-column:auto}}
+    /* Phase 6 — Reports UI. Report filters and export controls stay client-side; data and files are generated by Code.gs. */
+    .reportToolbar{display:grid;grid-template-columns:1fr 1fr 1.3fr 160px auto auto;gap:10px;align-items:end}.reportToolbar .field{gap:6px}.reportToolbar input,.reportToolbar select{padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:#fff;outline:none}.reportGrid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(320px,.65fr);gap:16px;align-items:start}.reportStats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:16px}.reportStat{padding:17px}.reportStat .statValue{font-size:25px}.reportStat .statMeta{margin-top:6px}.reportTable{overflow:auto;max-height:460px}.reportTable .table{min-width:760px}.employeeBar{height:8px;background:#eef2f7;border-radius:99px;overflow:hidden;margin-top:7px}.employeeBar i{display:block;height:100%;background:var(--brand);border-radius:99px}.reportNote{padding:13px 15px;border-radius:12px;background:#f8fafc;border:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.6}.exportActions{display:flex;gap:9px;flex-wrap:wrap}.exportLink{display:none;margin-top:10px;padding:10px 12px;background:#ecfdf3;border:1px solid #bbf7d0;border-radius:10px;color:#166534;font-size:12px;font-weight:700}.reportEmpty{padding:32px;text-align:center;color:var(--muted)}
+    .stat.kpi{position:relative;overflow:hidden;color:#0f172a;border:0;box-shadow:0 14px 30px rgba(15,23,42,.10);transition:transform .18s ease,box-shadow .18s ease}.stat.kpi:hover{transform:translateY(-3px);box-shadow:0 18px 36px rgba(15,23,42,.15)}.stat.kpi:after{content:"";position:absolute;right:-28px;top:-34px;width:108px;height:108px;border-radius:50%;background:rgba(255,255,255,.26)}.stat.kpi .statLabel,.stat.kpi .statMeta{position:relative;z-index:1;color:rgba(15,23,42,.72)}.stat.kpi .statValue{position:relative;z-index:1;font-size:31px;font-weight:900;letter-spacing:-.035em}.stat.kpi .icon{position:relative;z-index:2;background:rgba(255,255,255,.48);color:#0f172a;font-weight:900;box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}.kpiYellow{background:linear-gradient(135deg,#fff7b2 0%,#fde047 48%,#ca8a04 100%)}.kpiGreen{background:linear-gradient(135deg,#dcfce7 0%,#4ade80 52%,#15803d 100%)}.kpiBlue{background:linear-gradient(135deg,#dbeafe 0%,#60a5fa 52%,#1d4ed8 100%)}.kpiRed{background:linear-gradient(135deg,#fee2e2 0%,#fb7185 52%,#be123c 100%)}.title,.panelTitle,.statValue{font-family:"Avenir Next","Segoe UI",Inter,system-ui,sans-serif}.title{letter-spacing:-.035em}@media(max-width:1050px){.reportToolbar{grid-template-columns:1fr 1fr}.reportGrid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.layout{grid-template-columns:1fr}}
+    @media(max-width:760px){.reportToolbar{grid-template-columns:1fr}.sidebar{width:220px;transform:translateX(-100%);transition:.2s}.sidebar.open{transform:translateX(0)}.main{margin-left:0;width:100%;padding:18px}.mobileMenu{display:block}.topbar{align-items:flex-start}.title{font-size:23px}.actions .btn.hideMobile{display:none}.stats{grid-template-columns:1fr 1fr}.formGrid{grid-template-columns:1fr}.field.full{grid-column:auto}.table{min-width:600px}}
+    @media(max-width:480px){.stats{grid-template-columns:1fr}.actions{gap:6px}.btn{padding:10px 11px}.panel{padding:15px}.stat{padding:16px}}
+
+    .campaignShell{display:grid;gap:16px}.campaignHeader{padding:22px;display:flex;align-items:center;justify-content:space-between;gap:18px}.campaignTitle{font-size:24px;font-weight:800;margin:5px 0}.campaignMeta{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#475569;background:#f8fafc;border:1px solid var(--line);padding:9px 12px;border-radius:999px}.dot{width:7px;height:7px;border-radius:50%;background:#94a3b8}.stepper{padding:15px 18px;display:flex;align-items:center;gap:14px}.step{display:flex;align-items:center;gap:10px;min-width:0}.step>span{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#f1f5f9;color:#64748b;font-size:12px;font-weight:800;flex:0 0 auto}.step.active>span,.step.done>span{background:var(--brand);color:#fff}.step strong{display:block;font-size:12px}.step small{display:block;color:var(--muted);font-size:10px;margin-top:2px}.stepLine{height:1px;background:var(--line);flex:1}.campaignGrid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(280px,.7fr);gap:16px;align-items:start}.campaignMain{min-height:520px}.campaignStep.hidden{display:none}.sectionHead{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:20px}.optional{font-weight:500;color:#94a3b8;margin-left:5px}.countPill,.previewBadge{display:inline-flex;align-items:center;padding:6px 9px;border-radius:999px;background:#eff6ff;color:var(--brand);font-size:10px;font-weight:800;white-space:nowrap}.cardInner{border:1px solid var(--line);background:#f8fafc;border-radius:14px;margin-top:16px}.selectedRecipient{padding:16px}.emptyState{min-height:120px;display:grid;place-items:center;text-align:center;color:var(--muted);gap:4px;padding:20px}.emptyState strong{color:var(--text);font-size:13px}.emptyState span{font-size:11px}.emptyIcon{width:38px;height:38px;border-radius:11px;background:#eff6ff;color:var(--brand);display:grid;place-items:center;margin:auto}.selectedInfo{display:grid;grid-template-columns:48px 1fr auto;gap:13px;align-items:center}.avatar{width:44px;height:44px;border-radius:12px;background:#dbeafe;color:var(--brand);display:grid;place-items:center;font-weight:800}.selectedInfo strong{display:block;font-size:14px}.selectedInfo small{display:block;color:var(--muted);font-size:11px;margin-top:3px}.rowTag{font-size:10px;color:#64748b;background:#fff;border:1px solid var(--line);padding:6px 8px;border-radius:8px}.stepActions{display:flex;justify-content:flex-end;gap:9px;margin-top:22px;padding-top:17px;border-top:1px solid var(--line)}.reviewGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}.reviewItem{padding:13px;border:1px solid var(--line);border-radius:12px;background:#fafbfc;min-width:0}.reviewItem span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:700}.reviewItem strong{display:block;font-size:12px;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.previewBox{border:1px solid var(--line);border-radius:13px;overflow:hidden;background:#fff}.previewTop{padding:11px 13px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:800}.emailPreview{padding:18px;min-height:180px;background:#fff}.previewPlaceholder{display:grid;place-items:center;min-height:150px;color:var(--muted);font-size:12px;text-align:center}.emailPreview iframe{width:100%;min-height:260px;border:0}.testRow{margin-top:14px;padding:13px;border:1px solid #dbeafe;background:#f8fbff;border-radius:13px;display:flex;justify-content:space-between;align-items:center;gap:14px}.testRow strong{display:block;font-size:12px}.testRow span{display:block;color:var(--muted);font-size:10px;margin-top:3px}.testControls{display:flex;gap:7px}.testControls input{width:210px;padding:10px 11px;border:1px solid var(--line);border-radius:9px;outline:none}.summaryList{display:grid;gap:0;border:1px solid var(--line);border-radius:13px;overflow:hidden}.summaryList>div{padding:12px 13px;border-bottom:1px solid var(--line)}.summaryList>div:last-child{border-bottom:0}.summaryList span{display:block;color:var(--muted);font-size:10px}.summaryList strong{display:block;font-size:12px;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.safetyBox{display:flex;gap:10px;margin-top:14px;padding:13px;border:1px solid #dbeafe;background:#f8fbff;border-radius:13px}.safetyIcon{width:28px;height:28px;border-radius:9px;background:#dbeafe;color:var(--brand);display:grid;place-items:center;font-weight:800;flex:0 0 auto}.safetyBox strong{font-size:11px}.safetyBox p{margin:4px 0 0;color:var(--muted);font-size:10px;line-height:1.5}.campaignQuota{margin-top:14px}    .templateToolbar{display:grid;grid-template-columns:minmax(220px,1fr) auto;gap:10px;align-items:center;margin-bottom:16px}.templateToolbar input{padding:11px 13px;border:1px solid var(--line);border-radius:11px;background:#fff;outline:none}.templateGrid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);gap:16px;align-items:start}.templateForm{display:grid;gap:13px}.templateActions{display:flex;justify-content:flex-end;gap:9px;margin-top:5px;padding-top:15px;border-top:1px solid var(--line)}.templateList{border:1px solid var(--line);border-radius:13px;overflow:hidden;background:#fff}.templateRow{padding:14px;border-bottom:1px solid var(--line);cursor:pointer}.templateRow:last-child{border-bottom:0}.templateRow:hover,.templateRow.active{background:#f8fbff}.templateRow strong{display:block;font-size:13px}.templateRow small{display:block;color:var(--muted);font-size:11px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.templateRowMeta{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.templateTag{font-size:10px;color:#475569;background:#f8fafc;border:1px solid var(--line);padding:5px 7px;border-radius:7px}.templatePreview{border:1px solid var(--line);border-radius:13px;overflow:hidden;background:#fff}.templatePreviewHead{padding:12px 13px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center}.templatePreviewBody{padding:18px;min-height:260px}.templatePreviewBody iframe{width:100%;min-height:300px;border:0}.templateEmpty{padding:35px 20px;text-align:center;color:var(--muted);font-size:12px}.templateDanger{color:var(--danger)}
+    @media(max-width:900px){.templateGrid{grid-template-columns:1fr}}@media(max-width:650px){.templateToolbar{grid-template-columns:1fr}.templateActions{flex-direction:column}.templateActions .btn{width:100%}}
+.hidden{display:none!important}
+    @media(max-width:900px){.campaignGrid{grid-template-columns:1fr}.campaignSide{order:2}.campaignMain{order:1}}
+    @media(max-width:650px){.campaignHeader{align-items:flex-start;flex-direction:column}.stepper{overflow:auto}.step{min-width:150px}.stepLine{min-width:25px}.reviewGrid{grid-template-columns:1fr}.testRow{align-items:stretch;flex-direction:column}.testControls{width:100%}.testControls input{width:100%}.selectedInfo{grid-template-columns:42px 1fr}.rowTag{grid-column:2}.campaignTitle{font-size:21px}}
+    @media(max-width:650px){.recipientToolbar{grid-template-columns:1fr}.recipientToolbar .countPill{justify-self:start}.importMeta{align-items:flex-start;flex-direction:column}.importMeta .btn{width:100%}}
+
+
+    /* Phase 7 — Users & Roles UI. Access directory is kept separate from mail data. */
+    .usersStats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:16px}.userStat{padding:17px}.userToolbar{display:grid;grid-template-columns:minmax(220px,1fr) 150px auto;gap:10px;align-items:end}.userToolbar input,.userToolbar select{padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:#fff;outline:none}.roleBadge{display:inline-flex;padding:5px 8px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:11px;font-weight:800}.activeBadge{display:inline-flex;padding:5px 8px;border-radius:999px;background:#ecfdf3;color:#15803d;font-size:11px;font-weight:800}.inactiveBadge{display:inline-flex;padding:5px 8px;border-radius:999px;background:#fef2f2;color:#dc2626;font-size:11px;font-weight:800}.permissionGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.permissionItem{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#f8fafc;font-size:12px}.permissionItem strong{display:block}.userTable{overflow:auto;max-height:520px}.userTable .table{min-width:780px}
+    /* Phase 5 — Settings UI. Kept local to this page to avoid new asset dependencies. */
+    .settingsGrid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);gap:16px;align-items:start}
+    .settingsForm{display:grid;gap:14px}
+    .settingsActions{display:flex;justify-content:flex-end;gap:9px;margin-top:5px;padding-top:16px;border-top:1px solid var(--line)}
+    .settingsSection{padding:18px;border:1px solid var(--line);border-radius:14px;background:#fff}
+    .settingsSection+.settingsSection{margin-top:14px}
+    .settingsSectionHead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:14px}
+    .settingsSectionHead strong{font-size:13px}
+    .readonlyBox{display:grid;gap:10px}
+    .readonlyRow{display:flex;justify-content:space-between;gap:15px;padding:11px 0;border-bottom:1px solid var(--line);font-size:12px}
+    .readonlyRow:last-child{border-bottom:0}
+    .readonlyRow span{color:var(--muted)}
+    .readonlyRow strong{text-align:right;word-break:break-word}
+    .settingsNote{padding:13px;border:1px solid #dbeafe;background:#f8fbff;border-radius:13px;font-size:11px;line-height:1.55;color:#475569}
+    .settingsNote strong{color:var(--text)}
+    @media(max-width:900px){.settingsGrid{grid-template-columns:1fr}}
+    @media(max-width:650px){.settingsActions{flex-direction:column}.settingsActions .btn{width:100%}}
+  .userChip{display:flex;align-items:center;gap:8px;padding:8px 11px;border:1px solid var(--line);border-radius:12px;background:#fff}.userChip span:last-child{display:grid;gap:1px}.userChip strong{font-size:11px}.userChip small{font-size:10px;color:var(--muted)}.userDot{color:#22c55e;font-size:9px}.userChip .userDot{display:block}.userChip + .btn{} @media(max-width:760px){.userChip{display:none}}
+  
+/* Campaign history: restrained KPI accents matching the dashboard */
+.historyStats{gap:14px}
+.historyStat{position:relative;overflow:hidden;padding:18px 20px;border:1px solid #e2e8f0;border-radius:15px;background:#fff;box-shadow:0 4px 14px rgba(15,23,42,.035)}
+.historyStat:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#2563eb}
+.historyStat:nth-child(2):before{background:#16a34a}
+.historyStat:nth-child(3):before{background:#f59e0b}
+.historyStat:nth-child(4):before{background:#8b5cf6}
+.historyStat .statLabel{font-size:12px;font-weight:650;letter-spacing:.015em;color:#64748b}
+.historyStat .statValue{font-size:27px;font-weight:800;line-height:1.2;margin-top:9px;color:#0f172a}
+#view-campaigns .panel{border:1px solid #e2e8f0;border-radius:15px;box-shadow:0 5px 18px rgba(15,23,42,.035)}
+#view-campaigns .panelTitle{font-size:15px;font-weight:800;color:#172554}
+#view-campaigns .table th{font-weight:750;color:#64748b;border-bottom-color:#dbe3ef}
+#view-campaigns .table td{border-bottom-color:#edf2f7}
+
+</style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand"><div class="brandMark">V</div><div><strong>Vns.WorkSpace</strong><small>Email Bulk Tool</small></div></div>
+      <nav class="nav">
+        <button class="active" data-view="dashboard">◈ <span>Dashboard</span></button>
+        <button data-view="send">✉ <span>Send Campaign</span></button>
+        <button data-view="recipients">◎ <span>Recipients</span></button>
+        <button data-view="templates">▤ <span>Templates</span></button>
+        <button data-view="campaigns">◷ <span>Campaign History</span></button>
+      </nav>
+      <div class="sideFooter"><span class="poweredLabel">Powered By</span><strong class="poweredBrand">Vns.WorkSpace</strong></div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div><button class="btn mobileMenu" id="menuBtn">☰</button><div class="eyebrow">Vns.WorkSpace</div><div class="title" id="pageTitle">Email Operations Dashboard</div><div class="subtitle">Professional control panel for your existing Tool sheet mail engine.</div></div>
+        <div class="actions"><div class="userChip" id="userChip"><span class="userDot">●</span><span><strong id="userNameLabel">Workspace User</strong><small id="userRoleLabel">Employee</small></span></div><button class="btn hideMobile" id="refreshBtn">↻ Refresh</button><button class="btn primary" id="sendAllBtn">Send All Pending</button><button class="btn" id="logoutBtn">Sign out</button></div>
+      </header>
+
+      <section class="view active" id="view-dashboard">
+        <div class="grid stats">
+          <div class="card stat kpi kpiYellow"><div class="statTop"><span class="statLabel">Total Recipients</span><span class="icon">◎</span></div><div class="statValue" id="total">—</div><div class="statMeta">Rows with an email ID</div></div>
+          <div class="card stat kpi kpiGreen"><div class="statTop"><span class="statLabel">Sent Successfully</span><span class="icon">✓</span></div><div class="statValue" id="sent">—</div><div class="statMeta">Completed messages</div></div>
+          <div class="card stat kpi kpiBlue"><div class="statTop"><span class="statLabel">Pending</span><span class="icon">◷</span></div><div class="statValue" id="pending">—</div><div class="statMeta">Ready for processing</div></div>
+          <div class="card stat kpi kpiRed"><div class="statTop"><span class="statLabel">Failed</span><span class="icon">!</span></div><div class="statValue" id="failed">—</div><div class="statMeta">Rows needing attention</div></div>
+        </div>
+
+        <div class="grid layout">
+          <section class="card panel"><div class="panelHead"><div><div class="panelTitle">Recent Mail Activity</div><div class="hint">Latest records from the Tool sheet.</div></div><button class="btn" id="viewSendBtn">Open Send Campaign</button></div><div class="tableWrap"><table class="table"><thead><tr><th>Recipient</th><th>Subject</th><th>Status</th><th>Row</th></tr></thead><tbody id="recentBody"><tr><td colspan="4">Loading...</td></tr></tbody></table></div></section>
+          <aside class="card panel"><div class="panelHead"><div><div class="panelTitle">Quick Actions</div><div class="hint">Only existing workflow actions are exposed.</div></div></div><div class="quick"><button class="quickBtn" id="quickPending"><span class="quickIcon">✉</span><span class="quickText"><strong>Process Pending</strong><span>Send all unsent rows</span></span></button><button class="quickBtn" id="quickRefresh"><span class="quickIcon">↻</span><span class="quickText"><strong>Refresh Dashboard</strong><span>Sync latest sheet data</span></span></button></div><div class="quota"><div class="quotaRow"><span>Daily sending quota</span><strong id="quota">—</strong></div><div class="bar"><i id="quotaBar"></i></div><div class="hint" style="margin-top:8px">Quota is controlled by Google; the app only reads and respects the available value.</div></div></aside>
+        </div>
+      </section>
+
+      <section class="view" id="view-recipients">
+        <div class="campaignShell">
+          <div class="campaignHeader card">
+            <div>
+              <div class="eyebrow">Recipient Management</div>
+              <div class="campaignTitle">Recipients</div>
+              <div class="hint">Manage recipient records without changing existing rows. Imports only append new records.</div>
+            </div>
+            <div class="campaignMeta"><span class="dot"></span><span>Data Management</span></div>
+          </div>
+
+          <div class="grid recipientStats">
+            <div class="card recipientStat"><div class="statLabel">Total</div><div class="statValue" id="recipientTotal">—</div></div>
+            <div class="card recipientStat"><div class="statLabel">Pending</div><div class="statValue" id="recipientPending">—</div></div>
+            <div class="card recipientStat"><div class="statLabel">Sent</div><div class="statValue" id="recipientSent">—</div></div>
+            <div class="card recipientStat"><div class="statLabel">Failed</div><div class="statValue" id="recipientFailed">—</div></div>
+          </div>
+
+          <div class="grid layout">
+            <section class="card panel">
+              <div class="panelHead">
+                <div><div class="panelTitle">Recipient Directory</div><div class="hint">Search and filter existing Tool sheet records.</div></div>
+                <button class="btn" id="refreshRecipientsBtn">↻ Refresh</button>
+              </div>
+              <div class="recipientToolbar">
+                <input id="recipientSearch" type="search" placeholder="Search name or email...">
+                <select id="recipientFilter">
+                  <option value="all">All Status</option>
+                  <option value="pending">Pending</option>
+                  <option value="sent">Sent</option>
+                  <option value="failed">Failed</option>
+                </select>
+                <span class="countPill" id="recipientResultCount">0 records</span>
+              </div>
+              <div class="recipientTable">
+                <table class="table">
+                  <thead><tr><th>Recipient</th><th>Email</th><th>Subject</th><th>Status</th><th>Row</th></tr></thead>
+                  <tbody id="recipientDirectoryBody"><tr><td colspan="5">Loading...</td></tr></tbody>
+                </table>
+              </div>
+            </section>
+
+            <aside class="card panel">
+              <div class="panelHead"><div><div class="panelTitle">Import Recipients</div><div class="hint">Bring recipient data from supported sources. Existing Tool rows are never overwritten.</div></div></div>
+              <div class="importBox">
+                <strong>1. Upload CSV / TSV</strong>
+                <div class="hint" style="margin-top:5px">Your current format is supported, including <b>Templete ( mail body)</b> and <b>Link ( attachement)</b>.</div>
+                <input id="recipientCsv" type="file" accept=".csv,.tsv,text/csv,text/tab-separated-values" style="margin-top:14px">
+                <div class="importMeta"><span class="hint" id="csvFileInfo">No file selected</span><button class="btn primary" id="importRecipientsBtn">Import File</button></div>
+                <div class="importResult hidden" id="importResult"></div>
+              </div>
+              <div class="importBox" style="margin-top:12px">
+                <strong>2. Google Sheet URL</strong>
+                <div class="hint" style="margin-top:5px">Paste a Google Sheet link. The first tab is read using the same headers.</div>
+                <input id="recipientSheetUrl" type="url" placeholder="https://docs.google.com/spreadsheets/d/..." style="width:100%;margin-top:12px;padding:12px 13px;border:1px solid var(--line);border-radius:11px;outline:none">
+                <div class="importMeta"><span class="hint">First tab + first row as headers</span><button class="btn primary" id="importSheetBtn">Import Sheet</button></div>
+              </div>
+              <div class="importBox" style="margin-top:12px">
+                <strong>3. Paste Data</strong>
+                <div class="hint" style="margin-top:5px">Paste CSV or tab-separated Excel data directly.</div>
+                <textarea id="recipientPaste" placeholder="Name,Email Id,Templete ( mail body),Link ( attachement),Subject,Body" style="width:100%;min-height:100px;margin-top:12px;padding:12px 13px;border:1px solid var(--line);border-radius:11px;outline:none;resize:vertical"></textarea>
+                <div class="importMeta"><span class="hint">Comma or tab separated</span><button class="btn primary" id="importPasteBtn">Import Pasted Data</button></div>
+              </div>
+              <div class="safetyBox" style="margin-top:15px"><div class="safetyIcon">✓</div><div><strong>Existing data protected</strong><p>Import never overwrites existing rows. Duplicate email addresses are skipped.</p></div></div>
+              <div class="quota campaignQuota"><div class="panelTitle" style="font-size:13px">Supported headers</div><div class="hint" style="margin-top:7px">Name • Email / Email Id • Template / Templete ( mail body) • Attachment / Link ( attachement) • Subject • Body</div></div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-send">
+        <div class="campaignShell">
+          <div class="campaignHeader card">
+            <div>
+              <div class="eyebrow">Campaign Workspace</div>
+              <div class="campaignTitle">Create & Send Campaign</div>
+              <div class="hint">Build the message from the existing Tool sheet without changing the current mail engine.</div>
+            </div>
+            <div class="campaignMeta"><span class="dot"></span><span id="campaignState">Draft</span></div>
+          </div>
+
+          <div class="stepper card">
+            <div class="step active" data-step="1"><span>1</span><div><strong>Recipients</strong><small>Choose who receives the mail</small></div></div>
+            <div class="stepLine"></div>
+            <div class="step" data-step="2"><span>2</span><div><strong>Content</strong><small>Review subject & template</small></div></div>
+            <div class="stepLine"></div>
+            <div class="step" data-step="3"><span>3</span><div><strong>Review & Send</strong><small>Confirm before sending</small></div></div>
+          </div>
+
+          <div class="campaignGrid">
+            <div class="card panel campaignMain">
+              <div class="campaignStep" id="campaignStep1">
+                <div class="sectionHead"><div><div class="panelTitle">1. Select Recipient</div><div class="hint">Only pending rows from the existing Tool sheet are shown.</div></div><span class="countPill" id="pendingCountPill">0 pending</span></div>
+                <div class="field full"><label>Campaign Name <span class="optional">Optional</span></label><input id="campaignName" maxlength="80" placeholder="e.g. September Client Update"></div>
+                <div class="field full" style="margin-top:14px">
+                  <label for="senderDisplayName">Sender Display Name <span class="required">*</span></label>
+                  <select id="senderDisplayName" required>
+                    <option value="">Choose sender name</option>
+                    <option value="Vns.WorkSpace">Vns.WorkSpace</option>
+                    <option value="Veeere">Veeere</option>
+                    <option value="Hemant Churuwala">Hemant Churuwala</option>
+                    <option value="Deepak Brand">Deepak Brand</option>
+                  </select>
+                  <small class="hint">Only the display name changes. The sending email address stays the same.</small>
+                </div>
+                <div class="field full" style="margin-top:14px"><label>Recipient</label><select id="recipientSelect"><option value="">Loading pending recipients...</option></select></div>
+                <div class="selectedRecipient cardInner" id="selectedRecipientCard"><div class="emptyState"><div class="emptyIcon">✉</div><strong>Select a pending recipient</strong><span>Recipient details will appear here.</span></div></div>
+                <div class="stepActions"><button class="btn primary" id="toContentBtn">Continue to Content →</button></div>
+              </div>
+
+              <div class="campaignStep hidden" id="campaignStep2">
+                <div class="sectionHead"><div><div class="panelTitle">2. Review Content</div><div class="hint">Content is loaded from the selected Tool sheet row.</div></div><button class="btn" id="backRecipientsBtn">← Recipients</button></div>
+                <div class="formGrid">
+                  <div class="field full"><label>Saved Template</label><select id="campaignTemplateSelect"><option value="">Use selected recipient row content</option></select><small class="hint">Choose a template you already saved. Subject, body, and saved image/attachment will be used for this send.</small></div>
+                  <div class="field full"><label>Subject</label><input id="subjectPreview" readonly></div>
+                  <div class="field"><label>Template Source</label><input id="templateSource" readonly></div>
+                  <div class="field full"><label>Email Attachment</label><div class="filePickerRow"><input id="attachmentSource" readonly placeholder="No attachment selected"><button class="btn" type="button" id="uploadCampaignAttachmentBtn">Upload from Computer</button><button class="btn" type="button" id="chooseCampaignAttachmentBtn">Select from Drive</button><button class="btn" type="button" id="clearCampaignAttachmentBtn">Remove</button></div><input id="campaignAttachmentFile" type="file" class="visuallyHiddenFile" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.ppt,.pptx,.txt,.zip,.png,.jpg,.jpeg,.gif,.webp" /></div>
+                  <div class="field full"><label>Plain-text Fallback</label><textarea id="bodyPreview" readonly placeholder="No plain-text fallback available"></textarea></div>
+                </div>
+                <div class="stepActions"><button class="btn" id="toRecipientsFromContent">← Back</button><button class="btn primary" id="toReviewBtn">Continue to Review →</button></div>
+              </div>
+
+              <div class="campaignStep hidden" id="campaignStep3">
+                <div class="sectionHead"><div><div class="panelTitle">3. Review & Send</div><div class="hint">Check the final recipient and message details before sending.</div></div><button class="btn" id="backContentBtn">← Content</button></div>
+                <div class="reviewGrid">
+                  <div class="reviewItem"><span>Campaign</span><strong id="reviewCampaign">Untitled Campaign</strong></div>
+                  <div class="reviewItem"><span>Recipient</span><strong id="reviewRecipient">—</strong></div>
+                  <div class="reviewItem"><span>Subject</span><strong id="reviewSubject">—</strong></div>
+                  <div class="reviewItem"><span>Attachment</span><strong id="reviewAttachment">—</strong></div>
+                </div>
+                <div class="previewBox"><div class="previewTop"><span>Email Preview</span><span class="previewBadge">Existing mail engine</span></div><div class="emailPreview" id="emailPreview"><div class="previewPlaceholder">Select a recipient to load the message preview.</div></div></div>
+                <div class="testRow"><div><strong>Send a test</strong><span>Optional: verify the selected content before sending.</span></div><div class="testControls"><input id="testEmail" type="email" placeholder="test@example.com"><button class="btn" id="sendTestBtn">Send Test</button></div></div>
+                <div class="stepActions"><button class="btn" id="backContentBtn2">← Back</button><button class="btn primary" id="sendSelectedBtn">Send Campaign</button></div>
+              </div>
+            </div>
+
+            <aside class="card panel campaignSide">
+              <div class="panelHead"><div><div class="panelTitle">Campaign Summary</div><div class="hint">Live details for the current draft.</div></div></div>
+              <div class="summaryList">
+                <div><span>Recipient</span><strong id="summaryRecipient">Not selected</strong></div>
+                <div><span>Subject</span><strong id="summarySubject">—</strong></div>
+                <div><span>Template</span><strong id="summaryTemplate">—</strong></div>
+                <div><span>Attachment</span><strong id="summaryAttachment">—</strong></div>
+              </div>
+              <div class="safetyBox"><div class="safetyIcon">✓</div><div><strong>Existing workflow protected</strong><p>This screen calls the same service layer used by the Sheet workflow. No sheet columns are changed.</p></div></div>
+              <div class="quota campaignQuota"><div class="quotaRow"><span>Available quota</span><strong id="campaignQuota">—</strong></div><div class="hint" style="margin-top:7px">Sending remains subject to Google's account limits.</div></div>
+            </aside>
+          </div>
+        </div>
+      </section>
+      <section class="view" id="view-campaigns">
+        <div class="campaignShell">
+          <div class="campaignHeader card">
+            <div><div class="eyebrow">Campaign History</div><div class="campaignTitle">Mail Activity & Campaign Logs</div><div class="hint">Track web-app campaigns separately from the existing Tool sheet. No existing recipient or mail columns are changed.</div></div>
+            <div class="actions"><button class="btn" id="refreshCampaignsBtn">↻ Refresh</button></div>
+          </div>
+          <div class="grid historyStats">
+            <div class="card historyStat"><div class="statLabel">Campaigns</div><div class="statValue" id="historyCampaignCount">—</div></div>
+            <div class="card historyStat"><div class="statLabel">Messages Sent</div><div class="statValue" id="historySentCount">—</div></div>
+            <div class="card historyStat"><div class="statLabel">Failed</div><div class="statValue" id="historyFailedCount">—</div></div>
+            <div class="card historyStat"><div class="statLabel">Logged Messages</div><div class="statValue" id="historyLogCount">—</div></div>
+          </div>
+          <div class="historyGrid">
+            <section class="card panel">
+              <div class="panelHead"><div><div class="panelTitle">Campaign Directory</div><div class="hint">Each web send operation gets its own campaign record.</div></div></div>
+              <div class="historyToolbar"><input id="campaignSearch" type="search" placeholder="Search campaign name..."><select id="campaignStatusFilter"><option value="all">All Status</option><option value="Completed">Completed</option><option value="Completed with Errors">Completed with Errors</option><option value="Failed">Failed</option><option value="Processing">Processing</option></select><span class="countPill" id="campaignResultCount">0 records</span></div>
+              <div class="historyTable"><table class="table"><thead><tr><th>Campaign</th><th>Mode</th><th>Status</th><th>Sent</th><th>Failed</th><th>Created</th></tr></thead><tbody id="campaignDirectoryBody"><tr><td colspan="6">Loading...</td></tr></tbody></table></div>
+            </section>
+            <aside class="card panel">
+              <div class="panelHead"><div><div class="panelTitle">Campaign Details</div><div class="hint">Select a campaign to inspect its message log.</div></div></div>
+              <div class="historyDetail" id="campaignDetail"><div class="historyEmpty">Select a campaign from the directory.</div></div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-templates">
+        <div class="campaignShell">
+          <div class="campaignHeader card">
+            <div><div class="eyebrow">Template Library</div><div class="campaignTitle">Reusable Email Templates</div><div class="hint">Create and manage reusable subjects, bodies, Google Doc templates and attachments without changing the existing Tool workflow.</div></div>
+            <div class="campaignMeta"><span class="dot"></span><span id="templateCount">0 templates</span></div>
+          </div>
+          <div class="templateGrid">
+            <section class="card panel">
+              <div class="sectionHead"><div><div class="panelTitle" id="templateFormTitle">Create Template</div><div class="hint">Stored separately in the <strong>Email_Templates</strong> sheet.</div></div></div>
+              <div class="templateForm"><div class="formGrid">
+                <div class="field"><label>Template Name</label><input id="templateName" maxlength="120" placeholder="e.g. Welcome Email"></div>
+                <div class="field"><label>Subject</label><input id="templateSubject" placeholder="Email subject"></div>
+                <div class="field full"><label>Google Doc Template <span class="optional">Optional</span></label><div class="filePickerRow"><input id="templateDocDisplay" readonly placeholder="No Google Doc selected"><button class="btn" type="button" id="chooseTemplateDocBtn">Select from Drive</button><button class="btn" type="button" id="clearTemplateDocBtn">Remove</button></div><input id="templateDocUrl" type="hidden"></div>
+                <div class="field full"><label>Email Attachment <span class="optional">Optional</span></label><div class="filePickerRow"><input id="templateAttachmentDisplay" readonly placeholder="No attachment selected"><button class="btn" type="button" id="uploadTemplateAttachmentBtn">Upload from Computer</button><button class="btn" type="button" id="chooseTemplateAttachmentBtn">Select from Drive</button><button class="btn" type="button" id="clearTemplateAttachmentBtn">Remove</button></div><input id="templateAttachmentUrl" type="hidden"><input id="templateAttachmentFile" type="file" class="visuallyHiddenFile" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.ppt,.pptx,.txt,.zip,.png,.jpg,.jpeg,.gif,.webp" /></div>
+                <div class="field full"><label>Plain-text / fallback Body</label><textarea id="templateBody" placeholder="Write the email body or keep this as a fallback when using a Google Doc template."></textarea></div>
+              </div><div class="templateActions"><button class="btn" id="templateResetBtn">Clear</button><button class="btn primary" id="templateSaveBtn">Save Template</button></div></div>
+            </section>
+            <aside class="grid" style="gap:16px">
+              <section class="card panel"><div class="panelHead"><div><div class="panelTitle">Template Directory</div><div class="hint">Select a template to edit or preview.</div></div><button class="btn" id="refreshTemplatesBtn">↻</button></div>
+                <div class="templateToolbar"><input id="templateSearch" placeholder="Search templates..."><span class="countPill" id="templateResultCount">0 records</span></div><div class="templateList" id="templateList"><div class="templateEmpty">Loading templates...</div></div>
+              </section>
+              <section class="card panel"><div class="templatePreview"><div class="templatePreviewHead"><strong id="templatePreviewTitle">Preview</strong><span class="previewBadge">EMAIL</span></div><div class="templatePreviewBody" id="templatePreviewBody"><div class="templateEmpty">Select a template to preview.</div></div></div><div class="stepActions" style="margin-top:14px"><button class="btn templateDanger" id="templateDeleteBtn" disabled>Delete Template</button></div></section>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="view" id="view-reports">
+        <div class="campaignShell">
+          <div class="campaignHeader card">
+            <div><div class="eyebrow">Reports & Analytics</div><div class="campaignTitle">Email Performance Intelligence</div><div class="hint">Track employee-wise sending, campaign performance, delivery results and daily activity. Reporting uses a separate activity log and does not alter the existing Tool workflow.</div></div>
+            <div class="exportActions"><button class="btn" id="exportExcelBtn">↧ Excel Report</button><button class="btn primary" id="exportPdfBtn">↧ PDF Report</button></div>
+          </div>
+          <section class="card panel">
+            <div class="panelHead"><div><div class="panelTitle">Report Filters</div><div class="hint">Apply filters, then refresh the report.</div></div><span class="countPill" id="reportGeneratedAt">Not loaded</span></div>
+            <div class="reportToolbar">
+              <div class="field"><label>From Date</label><input type="date" id="reportStartDate"></div>
+              <div class="field"><label>To Date</label><input type="date" id="reportEndDate"></div>
+              <div class="field"><label>Employee</label><select id="reportEmployee"><option value="">All Employees</option></select></div>
+              <div class="field"><label>Status</label><select id="reportStatus"><option value="all">All</option><option value="sent">Sent</option><option value="failed">Failed</option></select></div>
+              <button class="btn primary" id="refreshReportsBtn">↻ Refresh</button>
+              <button class="btn" id="clearReportFiltersBtn">Clear</button>
+            </div>
+            <div class="reportNote" style="margin-top:14px">Reports include Phase 6 activity logs plus earlier Sent/Failed Tool-sheet records. Earlier records are shown as “Unattributed / Existing Tool Data” instead of being assigned to an employee without evidence.</div>
+          </section>
+
+          <div class="grid reportStats">
+            <div class="card reportStat"><div class="statLabel">Total Emails</div><div class="statValue" id="reportTotal">—</div><div class="statMeta">Filtered activity</div></div>
+            <div class="card reportStat"><div class="statLabel">Sent</div><div class="statValue" id="reportSent">—</div><div class="statMeta">Successfully processed</div></div>
+            <div class="card reportStat"><div class="statLabel">Failed</div><div class="statValue" id="reportFailed">—</div><div class="statMeta">Sending failures</div></div>
+            <div class="card reportStat"><div class="statLabel">Success Rate</div><div class="statValue" id="reportRate">—</div><div class="statMeta">Sent ÷ total</div></div>
+          </div>
+
+          <div class="grid reportStats">
+            <div class="card reportStat"><div class="statLabel">Unique Recipients</div><div class="statValue" id="reportRecipients">—</div><div class="statMeta">Distinct email addresses</div></div>
+            <div class="card reportStat"><div class="statLabel">Employees</div><div class="statValue" id="reportEmployees">—</div><div class="statMeta">Active in filtered period</div></div>
+            <div class="card reportStat"><div class="statLabel">Campaigns</div><div class="statValue" id="reportCampaigns">—</div><div class="statMeta">Campaign activity</div></div>
+            <div class="card reportStat"><div class="statLabel">Report Scope</div><div class="statValue" id="reportScope">—</div><div class="statMeta">Current filter</div></div>
+          </div>
+
+          <div class="reportGrid">
+            <section class="card panel"><div class="panelHead"><div><div class="panelTitle">Employee Performance</div><div class="hint">How many emails each employee processed and the result.</div></div></div><div class="reportTable"><table class="table"><thead><tr><th>Employee</th><th>Total</th><th>Sent</th><th>Failed</th><th>Success Rate</th></tr></thead><tbody id="employeeReportBody"><tr><td colspan="5">Run the report to load data.</td></tr></tbody></table></div></section>
+            <aside class="card panel"><div class="panelHead"><div><div class="panelTitle">Daily Trend</div><div class="hint">Daily sent / failed activity.</div></div></div><div class="reportTable"><table class="table" style="min-width:420px"><thead><tr><th>Date</th><th>Total</th><th>Sent</th><th>Failed</th></tr></thead><tbody id="trendReportBody"><tr><td colspan="4">Run the report to load data.</td></tr></tbody></table></div></aside>
+          </div>
+
+          <div class="reportGrid">
+            <section class="card panel"><div class="panelHead"><div><div class="panelTitle">Campaign Performance</div><div class="hint">Campaign-wise delivery results.</div></div></div><div class="reportTable"><table class="table"><thead><tr><th>Campaign</th><th>Total</th><th>Sent</th><th>Failed</th><th>Success Rate</th></tr></thead><tbody id="campaignReportBody"><tr><td colspan="5">Run the report to load data.</td></tr></tbody></table></div></section>
+            <aside class="card panel"><div class="panelHead"><div><div class="panelTitle">Recent Activity</div><div class="hint">Latest filtered records.</div></div></div><div class="reportTable"><table class="table" style="min-width:620px"><thead><tr><th>Employee</th><th>Recipient</th><th>Status</th><th>Time</th></tr></thead><tbody id="recentReportBody"><tr><td colspan="4">Run the report to load data.</td></tr></tbody></table></div></aside>
+          </div>
+          <div class="exportLink" id="reportExportLink"></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-settings">
+        <div class="campaignShell">
+          <div class="campaignHeader card">
+            <div>
+              <div class="eyebrow">Workspace Settings</div>
+              <div class="campaignTitle">Vns.WorkSpace Configuration</div>
+              <div class="hint">Manage workspace-level profile and campaign defaults. Existing Tool sheet and mail engine settings are protected.</div>
+            </div>
+            <div class="campaignMeta"><span class="dot"></span><span>Configuration</span></div>
+          </div>
+          <div class="settingsGrid">
+            <section class="card panel">
+              <div class="settingsSection">
+                <div class="settingsSectionHead"><div><strong>Workspace Profile</strong><div class="hint">Used for the product workspace identity only.</div></div><span class="previewBadge">PROFILE</span></div>
+                <div class="formGrid">
+                  <div class="field"><label>Company Name</label><input id="settingsCompanyName" maxlength="120" placeholder="Vns.WorkSpace"></div>
+                  <div class="field"><label>Product Name</label><input id="settingsProductName" maxlength="120" placeholder="Email Bulk Tool"></div>
+                  <div class="field"><label>Support Email <span class="optional">Optional</span></label><input id="settingsSupportEmail" type="email" placeholder="support@example.com"></div>
+                  <div class="field"><label>Website <span class="optional">Optional</span></label><input id="settingsWebsite" type="url" placeholder="https://example.com"></div>
+                </div>
+              </div>
+              <div class="settingsSection">
+                <div class="settingsSectionHead"><div><strong>Campaign Defaults</strong><div class="hint">Only default labels are stored here; sending behavior remains unchanged.</div></div><span class="previewBadge">CAMPAIGN</span></div>
+                <div class="field"><label>Default Campaign Name</label><input id="settingsDefaultCampaignName" maxlength="80" placeholder="Vns.WorkSpace Campaign"></div>
+              </div>
+              <div class="settingsActions"><button class="btn" id="settingsResetBtn">Restore Defaults</button><button class="btn primary" id="settingsSaveBtn">Save Settings</button></div>
+            </section>
+            <aside class="grid" style="gap:16px">
+              <section class="card panel">
+                <div class="panelHead"><div><div class="panelTitle">System Information</div><div class="hint">Read-only runtime information.</div></div><button class="btn" id="refreshSettingsBtn">↻</button></div>
+                <div class="readonlyBox">
+                  <div class="readonlyRow"><span>Current sender</span><strong id="settingsSender">—</strong></div>
+                  <div class="readonlyRow"><span>Script timezone</span><strong id="settingsTimezone">—</strong></div>
+                  <div class="readonlyRow"><span>Primary data sheet</span><strong id="settingsToolSheet">—</strong></div>
+                  <div class="readonlyRow"><span>Template sheet</span><strong id="settingsTemplateSheet">—</strong></div>
+                  <div class="readonlyRow"><span>Campaign sheet</span><strong id="settingsCampaignSheet">—</strong></div>
+                </div>
+              </section>
+              <section class="card panel"><div class="settingsNote"><strong>Protected architecture</strong><br>Settings are stored separately in <b>Email_Settings</b>. The existing <b>Tool</b> sheet columns A:G, recipient records, template engine, campaign logs and Gmail sending service are not modified by this module.</div></section>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-users">
+        <div class="campaignShell">
+          <div class="campaignHeader card">
+            <div><div class="eyebrow">Workspace Access</div><div class="campaignTitle">Users & Roles</div><div class="hint">Manage workspace users without changing the existing Tool sheet or mail engine.</div></div>
+            <div class="campaignMeta"><span class="dot"></span><span id="userAccessState">Access Directory</span></div>
+          </div>
+          <div class="grid usersStats">
+            <div class="card userStat"><div class="statLabel">Total Users</div><div class="statValue" id="usersTotal">0</div></div>
+            <div class="card userStat"><div class="statLabel">Active</div><div class="statValue" id="usersActive">0</div></div>
+            <div class="card userStat"><div class="statLabel">Inactive</div><div class="statValue" id="usersInactive">0</div></div>
+            <div class="card userStat"><div class="statLabel">My Role</div><div class="statValue" id="myRole">Admin</div></div>
+          </div>
+          <div class="grid" style="grid-template-columns:minmax(0,1.55fr) minmax(300px,.65fr);align-items:start;gap:16px">
+            <section class="card panel">
+              <div class="panelHead"><div><div class="panelTitle">User Directory</div><div class="hint">Active users can be assigned a workspace role.</div></div><button class="btn" id="refreshUsersBtn">↻ Refresh</button></div>
+              <div class="userToolbar">
+                <div class="field"><label>Search</label><input id="userSearch" placeholder="Search name or email..." type="search"></div>
+                <div class="field"><label>Status</label><select id="userStatusFilter"><option value="all">All</option><option value="Active">Active</option><option value="Inactive">Inactive</option></select></div>
+                <button class="btn" id="clearUserFormBtn">Clear Form</button>
+              </div>
+              <div class="userTable" style="margin-top:15px"><table class="table"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Updated</th><th>Action</th></tr></thead><tbody id="userDirectoryBody"><tr><td colspan="6">Loading...</td></tr></tbody></table></div>
+            </section>
+            <aside class="grid" style="gap:16px">
+              <section class="card panel">
+                <div class="panelHead"><div><div class="panelTitle" id="userFormTitle">Add User</div><div class="hint">Use the same Google Workspace email the employee signs in with.</div></div></div>
+                <div class="formGrid" style="grid-template-columns:1fr">
+                  <div class="field"><label>Name</label><input id="userName" maxlength="100" placeholder="Employee name"></div>
+                  <div class="field"><label>Email</label><input id="userEmail" type="email" placeholder="employee@company.com"></div>
+                  <div class="field"><label>Role</label><select id="userRole"><option>Admin</option><option>Manager</option><option selected>Employee</option><option>Viewer</option></select></div>
+                  <div class="field"><label>Status</label><select id="userStatus"><option selected>Active</option><option>Inactive</option></select></div>
+                </div>
+                <div class="stepActions"><button class="btn primary" id="saveUserBtn">Save User</button></div>
+                <input type="hidden" id="userId">
+              </section>
+              <section class="card panel">
+                <div class="panelHead"><div><div class="panelTitle">Role Permissions</div><div class="hint">Built-in role model for future ERP modules.</div></div></div>
+                <div class="permissionGrid">
+                  <div class="permissionItem"><strong>Admin</strong>All workspace modules</div>
+                  <div class="permissionItem"><strong>Manager</strong>Campaigns + reports</div>
+                  <div class="permissionItem"><strong>Employee</strong>Sending + recipients</div>
+                  <div class="permissionItem"><strong>Viewer</strong>Dashboard + reports</div>
+                </div>
+              </section>
+              <section class="card panel"><div class="settingsNote"><strong>Protected architecture</strong><br>Users are stored in <b>Workspace_Users</b>. Existing <b>Tool</b>, templates, campaign logs, activity logs and Gmail service are not changed by this module.</div></section>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // Client layer: UI state and interactions only. Mail rules remain in Code.gs.
+    var SESSION_TOKEN = '<?= sessionToken ?>';
+    var USER_CONTEXT = <?= userContext || '{}' ?>;
+    var state = { data:null, selected:null, step:1 };
+    var templateState={rows:[],selected:null};
+    var historyState={campaigns:[],logs:[],selected:null};
+    var reportState={data:null};
+    function $(id){ return document.getElementById(id); }
+    function toast(message){ var el=$('toast'); el.textContent=message; el.classList.add('show'); setTimeout(function(){el.classList.remove('show');},3200); }
+    function busy(button,text){ button.disabled=true; button.dataset.oldText=button.textContent; button.innerHTML='<span class="spinner"></span>'+text; }
+    function idle(button){ button.disabled=false; button.textContent=button.dataset.oldText||button.textContent; }
+    function esc(value){ return String(value==null?'':value).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c];}); }
+    function initials(name,email){ var source=String(name||email||'U').trim(); return source.split(/\s+/).slice(0,2).map(function(x){return x.charAt(0).toUpperCase();}).join('')||'U'; }
+
+    function loadDashboard(){
+      $('recentBody').innerHTML='<tr><td colspan="4"><span class="spinner"></span>Loading dashboard...</td></tr>';
+      google.script.run.withSuccessHandler(renderDashboard).withFailureHandler(function(e){toast(e.message||'Dashboard load failed.');$('recentBody').innerHTML='<tr><td colspan="4">Unable to load data.</td></tr>';}).getDashboardData(SESSION_TOKEN);
+    }
+    function renderDashboard(data){
+      state.data=data;
+      $('total').textContent=data.total; $('sent').textContent=data.sent; $('pending').textContent=data.pending; $('failed').textContent=data.failed;
+      $('quota').textContent=data.quota===null?'Unavailable':data.quota;
+      $('quotaBar').style.width=(data.quota===null?0:(Number(data.quota)>0?100:0))+'%';
+      var body=$('recentBody');
+      if(!data.recent.length) body.innerHTML='<tr><td colspan="4">No mail activity found.</td></tr>';
+      else body.innerHTML=data.recent.map(function(r){var cls=r.status.indexOf('Sent Successfully')!==-1?'sent':(r.status.indexOf('Failed:')===0?'failed':'pending');var label=cls==='sent'?'Sent':(cls==='failed'?'Failed':'Pending');return '<tr><td><strong>'+esc(r.name||'Unnamed')+'</strong><br><span style="color:#718096">'+esc(r.email)+'</span></td><td>'+esc(r.subject||'—')+'</td><td><span class="status '+cls+'">'+label+'</span></td><td>#'+r.row+'</td></tr>';}).join('');
+      renderRecipients(data.pendingRows||[]); $('campaignQuota').textContent=data.quota===null?'Unavailable':data.quota;
+    }
+    function renderRecipients(rows){
+      state.pendingRows=rows;
+      $('pendingCountPill').textContent=rows.length+' pending';
+      var select=$('recipientSelect');
+      if(!rows.length){select.innerHTML='<option value="">No pending recipients</option>';state.selected=null;renderSelected(null);return;}
+      select.innerHTML='<option value="">Select pending recipient</option>'+rows.map(function(r){return '<option value="'+r.row+'">'+esc(r.name||'Unnamed')+' — '+esc(r.email)+'</option>';}).join('');
+      if(state.selected){select.value=String(state.selected.row);}
+    }
+    function selectRecipient(rowNumber){
+      var rows=state.pendingRows||[]; state.selected=rows.find(function(r){return String(r.row)===String(rowNumber);})||null; renderSelected(state.selected); renderContent(state.selected); updateSummary(state.selected);
+    }
+    function renderSelected(r){
+      if(!r){$('selectedRecipientCard').innerHTML='<div class="emptyState"><div class="emptyIcon">✉</div><strong>Select a pending recipient</strong><span>Recipient details will appear here.</span></div>';return;}
+      $('selectedRecipientCard').innerHTML='<div class="selectedInfo"><div class="avatar">'+esc(initials(r.name,r.email))+'</div><div><strong>'+esc(r.name||'Unnamed')+'</strong><small>'+esc(r.email)+'</small></div><div class="rowTag">Row #'+r.row+'</div></div>';
+    }
+    function renderContent(r){
+      $('campaignTemplateSelect').value='';
+      $('subjectPreview').value=r?r.subject||'':'';
+      $('templateSource').value=r?(r.hasTemplate?'Google Doc template':'Plain-text body'):'—';
+      $('attachmentSource').value=r?(r.hasAttachment?'Existing Drive attachment':'No attachment'):'—';
+      $('bodyPreview').value=r?(r.body||'') :'';
+    }
+    function updateSummary(r){
+      $('summaryRecipient').textContent=r?r.email:'Not selected'; $('summarySubject').textContent=r?r.subject||'—':'—'; $('summaryTemplate').textContent=r?(r.hasTemplate?'Google Doc':'Plain text'):'—'; $('summaryAttachment').textContent=r?(r.hasAttachment?'Attached':'None'):'—';
+    }
+    function setStep(step){
+      state.step=step;
+      [1,2,3].forEach(function(n){$('campaignStep'+n).classList.toggle('hidden',n!==step);});
+      document.querySelectorAll('.step').forEach(function(el){var n=Number(el.dataset.step);el.classList.toggle('active',n===step);el.classList.toggle('done',n<step);});
+      $('campaignState').textContent=step===1?'Draft':(step===2?'Content Review':'Ready to Send');
+      if(step===3) renderReview();
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+    function renderReview(){
+      var r=state.selected;
+      $('reviewCampaign').textContent=$('campaignName').value.trim()||'Untitled Campaign';
+      var selectedTemplateRow=Number($('campaignTemplateSelect').value||0);
+      var selectedTemplate=(templateState.rows||[]).find(function(t){return Number(t.row)===selectedTemplateRow;});
+      $('reviewRecipient').textContent=r?r.email:'—';
+      $('reviewSubject').textContent=selectedTemplate?(selectedTemplate.subject||'—'):(r?r.subject||'—':'—');
+      $('reviewAttachment').textContent=selectedTemplate?(selectedTemplate.attachmentUrl?'Attached':'None'):(r?(r.hasAttachment?'Attached':'None'):'—');
+      if(!r){$('emailPreview').innerHTML='<div class="previewPlaceholder">Select a recipient to load the message preview.</div>';return;}
+      $('emailPreview').innerHTML='<div class="previewPlaceholder"><span class="spinner"></span>Loading email preview...</div>';
+      google.script.run.withSuccessHandler(function(preview){
+        if(preview.html){$('emailPreview').innerHTML='<iframe sandbox="allow-same-origin" srcdoc="'+esc(preview.html)+'"></iframe>';}
+        else $('emailPreview').innerHTML='<div style="font-family:Arial,sans-serif;font-size:14px;line-height:1.6;white-space:pre-wrap">'+esc(preview.text||'No body available.')+'</div>';
+      }).withFailureHandler(function(e){$('emailPreview').innerHTML='<div class="previewPlaceholder">Preview unavailable. The actual send engine can still validate the selected row.</div>';}).getWebRowPreview(Number(r.row),SESSION_TOKEN,selectedTemplateRow);
+    }
+    function sendSelected(){
+      if(!state.selected){toast('Please select a pending recipient.');return;}
+      var senderName=$('senderDisplayName').value.trim();
+      if(!senderName){toast('Please choose the sender display name.');$('senderDisplayName').focus();return;}
+      var btn=$('sendSelectedBtn');busy(btn,'Sending Campaign');
+      var campaignName=$('campaignName').value.trim()||'Web Campaign';
+      google.script.run.withSuccessHandler(function(result){idle(btn);toast(result.message||'Mail sent successfully.');loadDashboard();loadCampaigns();setStep(1);}).withFailureHandler(function(e){idle(btn);toast(e.message||'Send failed.');}).sendWebRow(Number(state.selected.row),campaignName,senderName,SESSION_TOKEN,Number($('campaignTemplateSelect').value||0));
+    }
+    function sendTest(){
+      if(!state.selected){toast('Please select a recipient first.');return;}
+      var email=$('testEmail').value.trim(); if(!email){toast('Enter a test email address.');$('testEmail').focus();return;}
+      var btn=$('sendTestBtn');busy(btn,'Sending');
+      google.script.run.withSuccessHandler(function(result){idle(btn);toast(result.message||'Test email sent.');}).withFailureHandler(function(e){idle(btn);toast(e.message||'Test send failed.');}).sendWebTest(Number(state.selected.row),email,SESSION_TOKEN);
+    }
+    function sendAll(button){busy(button,'Processing');google.script.run.withSuccessHandler(function(result){idle(button);toast(result.message+' Sent: '+result.sent+' | Failed: '+result.failed);loadDashboard();loadCampaigns();}).withFailureHandler(function(e){idle(button);toast(e.message||'Bulk send failed.');}).sendAllPendingWeb('Pending Queue', true,SESSION_TOKEN);}
+    function loadRecipients(){
+      $('recipientDirectoryBody').innerHTML='<tr><td colspan="5"><span class="spinner"></span>Loading recipients...</td></tr>';
+      google.script.run.withSuccessHandler(renderRecipientsDirectory).withFailureHandler(function(e){toast(e.message||'Recipients load failed.');$('recipientDirectoryBody').innerHTML='<tr><td colspan="5">Unable to load recipients.</td></tr>';}).getRecipientsData(SESSION_TOKEN);
+    }
+    function renderRecipientsDirectory(data){
+      state.recipientData=data;
+      $('recipientTotal').textContent=data.total;
+      $('recipientPending').textContent=data.pending;
+      $('recipientSent').textContent=data.sent;
+      $('recipientFailed').textContent=data.failed;
+      filterRecipientDirectory();
+    }
+    function filterRecipientDirectory(){
+      var data=state.recipientData||{rows:[]};
+      var q=String($('recipientSearch').value||'').trim().toLowerCase();
+      var filter=$('recipientFilter').value;
+      var rows=data.rows.filter(function(r){
+        var hay=(String(r.name||'')+' '+String(r.email||'')+' '+String(r.subject||'')).toLowerCase();
+        if(q && hay.indexOf(q)===-1) return false;
+        if(filter==='sent' && r.status.indexOf('Sent Successfully')===-1) return false;
+        if(filter==='failed' && r.status.indexOf('Failed:')!==0) return false;
+        if(filter==='pending' && (r.status.indexOf('Sent Successfully')!==-1 || r.status.indexOf('Failed:')===0)) return false;
+        return true;
+      });
+      $('recipientResultCount').textContent=rows.length+' records';
+      var body=$('recipientDirectoryBody');
+      if(!rows.length){body.innerHTML='<tr><td colspan="5"><div class="emptyTable">No matching recipients found.</div></td></tr>';return;}
+      body.innerHTML=rows.map(function(r){
+        var cls=r.status.indexOf('Sent Successfully')!==-1?'sent':(r.status.indexOf('Failed:')===0?'failed':'pending');
+        var label=cls==='sent'?'Sent':(cls==='failed'?'Failed':'Pending');
+        return '<tr><td><strong>'+esc(r.name||'Unnamed')+'</strong></td><td>'+esc(r.email)+'</td><td>'+esc(r.subject||'—')+'</td><td><span class="status '+cls+'">'+label+'</span></td><td>#'+r.row+'</td></tr>';
+      }).join('');
+    }
+    function parseCsv(text){
+      var delimiter='\t';
+      var sample=String(text||'').split(/\r?\n/)[0]||'';
+      if(sample.indexOf('\t')===-1) delimiter=',';
+      var rows=[],row=[],value='',quoted=false;
+      for(var i=0;i<text.length;i++){
+        var c=text.charAt(i),next=text.charAt(i+1);
+        if(c==='"'){if(quoted&&next==='"'){value+='"';i++;}else quoted=!quoted;}
+        else if(c===delimiter&&!quoted){row.push(value);value='';}
+        else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&next==='\n')i++;row.push(value);value='';if(row.some(function(x){return String(x).trim()!=='';}))rows.push(row);row=[];}
+        else value+=c;
+      }
+      row.push(value);if(row.some(function(x){return String(x).trim()!=='';}))rows.push(row);
+      if(!rows.length)return [];
+      var headers=rows[0].map(function(h){return String(h||'').trim().toLowerCase().replace(/[^a-z0-9]/g,'');});
+      function get(item,aliases){for(var a=0;a<aliases.length;a++){if(item[aliases[a]]!=null)return item[aliases[a]];}return '';}
+      return rows.slice(1).map(function(r){var item={};headers.forEach(function(h,idx){item[h]=String(r[idx]||'').trim();});return{
+        name:get(item,['name','fullname','recipientname']),
+        email:get(item,['email','emailid','emailaddress']),
+        template:get(item,['template','templete','templatemailbody','templetemailbody','googledoctemplate','templatelink']),
+        attachment:get(item,['attachment','attachmentlink','linkattachment','linkattachement','driveattachment','link']),
+        subject:get(item,['subject','mailsubject']),
+        body:get(item,['body','mailbody','message','content'])
+      };}).filter(function(r){return r.name||r.email||r.subject||r.body||r.template||r.attachment;});
+    }
+    function importParsedRows(rows,btn){
+      if(!rows.length)throw new Error('No valid recipient rows found.');
+      if(!rows.some(function(r){return r.email;}))throw new Error('Email / Email Id column is required.');
+      google.script.run.withSuccessHandler(function(result){idle(btn);$('importResult').classList.remove('hidden');$('importResult').textContent='Imported: '+result.imported+' • Duplicate: '+result.duplicate+' • Invalid: '+result.invalid;$('recipientCsv').value='';$('csvFileInfo').textContent='No file selected';$('recipientPaste').value='';loadRecipients();loadDashboard();toast(result.message);}).withFailureHandler(function(e){idle(btn);toast(e.message||'Import failed.');}).importRecipients(rows,SESSION_TOKEN);
+    }
+    function handleRecipientFile(){var file=$('recipientCsv').files[0];$('csvFileInfo').textContent=file?file.name+' • '+Math.max(1,Math.round(file.size/1024))+' KB':'No file selected';$('importResult').classList.add('hidden');}
+    function importRecipientCsv(){var file=$('recipientCsv').files[0];if(!file){toast('Please select a CSV or TSV file first.');return;}var btn=$('importRecipientsBtn');busy(btn,'Importing');var reader=new FileReader();reader.onload=function(){try{importParsedRows(parseCsv(String(reader.result||'')),btn);}catch(err){idle(btn);toast(err.message||'File read failed.');}};reader.onerror=function(){idle(btn);toast('File could not be read.');};reader.readAsText(file);}
+    function importPastedData(){var text=String($('recipientPaste').value||'').trim();if(!text){toast('Paste CSV or Excel tab-separated data first.');return;}var btn=$('importPasteBtn');busy(btn,'Importing');try{importParsedRows(parseCsv(text),btn);}catch(err){idle(btn);toast(err.message||'Paste data could not be read.');}}
+    function importGoogleSheet(){var url=$('recipientSheetUrl').value.trim();if(!url){toast('Paste a Google Sheet URL first.');return;}var btn=$('importSheetBtn');busy(btn,'Importing');google.script.run.withSuccessHandler(function(result){idle(btn);$('recipientSheetUrl').value='';$('importResult').classList.remove('hidden');$('importResult').textContent='Imported: '+result.imported+' • Duplicate: '+result.duplicate+' • Invalid: '+result.invalid;loadRecipients();loadDashboard();toast(result.message);}).withFailureHandler(function(e){idle(btn);toast(e.message||'Google Sheet import failed.');}).importRecipientsFromGoogleSheet(url,SESSION_TOKEN);}
+
+    function populateCampaignTemplateOptions(){
+      var select=$('campaignTemplateSelect');
+      if(!select)return;
+      var current=select.value;
+      select.innerHTML='<option value="">Use selected recipient row content</option>'+(templateState.rows||[]).map(function(t){return '<option value="'+Number(t.row)+'">'+esc(t.name)+' — '+esc(t.subject||'No subject')+'</option>';}).join('');
+      if(current && (templateState.rows||[]).some(function(t){return String(t.row)===String(current);}))select.value=current;
+    }
+    function applyCampaignTemplate(){
+      var row=$('campaignTemplateSelect').value;
+      if(!row){renderContent(state.selected);return;}
+      var t=(templateState.rows||[]).find(function(item){return String(item.row)===String(row);});
+      if(!t)return;
+      $('subjectPreview').value=t.subject||'';
+      $('templateSource').value=t.googleDocUrl?'Saved Google Doc template':'Saved plain-text template';
+      $('attachmentSource').value=t.attachmentUrl?'Saved template attachment':'No attachment';
+      $('bodyPreview').value=t.body||'';
+      state.selectedTemplateRow=Number(t.row);
+      updateSummary(state.selected);
+      google.script.run.withSuccessHandler(function(preview){
+        if(preview && preview.text!==undefined && preview.text!==null && preview.text!=='')$('bodyPreview').value=preview.text;
+      }).withFailureHandler(function(){}).getTemplatePreview(Number(t.row),SESSION_TOKEN);
+    }
+    function loadTemplates(){
+      $('templateList').innerHTML='<div class="templateEmpty"><span class="spinner"></span>Loading templates...</div>';
+      google.script.run.withSuccessHandler(renderTemplates).withFailureHandler(function(e){$('templateList').innerHTML='<div class="templateEmpty">Unable to load templates.</div>';toast(e.message||'Templates load failed.');}).getTemplatesData(SESSION_TOKEN);
+    }
+    function renderTemplates(data){templateState.rows=data.rows||[];populateCampaignTemplateOptions();$('templateCount').textContent=templateState.rows.length+' template'+(templateState.rows.length===1?'':'s');filterTemplates();}
+    function filterTemplates(){
+      var q=String($('templateSearch').value||'').trim().toLowerCase();var rows=templateState.rows.filter(function(r){return !q || (String(r.name)+' '+String(r.subject)).toLowerCase().indexOf(q)!==-1;});$('templateResultCount').textContent=rows.length+' records';
+      if(!rows.length){$('templateList').innerHTML='<div class="templateEmpty">No templates found.</div>';return;}
+      $('templateList').innerHTML=rows.map(function(r){var active=templateState.selected&&String(templateState.selected.row)===String(r.row);return '<div class="templateRow '+(active?'active':'')+'" data-template-row="'+r.row+'"><strong>'+esc(r.name)+'</strong><small>'+esc(r.subject)+'</small><div class="templateRowMeta"><span class="templateTag">'+(r.googleDocUrl?'Google Doc':'Plain text')+'</span><span class="templateTag">'+(r.attachmentUrl?'Attachment':'No attachment')+'</span></div></div>';}).join('');
+      document.querySelectorAll('[data-template-row]').forEach(function(el){el.addEventListener('click',function(){selectTemplate(this.getAttribute('data-template-row'));});});
+    }
+    function selectTemplate(row){
+      templateState.selected=templateState.rows.find(function(r){return String(r.row)===String(row);})||null;var r=templateState.selected;if(!r)return;
+      $('templateFormTitle').textContent='Edit Template';$('templateName').value=r.name||'';$('templateSubject').value=r.subject||'';$('templateDocUrl').value=r.googleDocUrl||'';$('templateDocDisplay').value=r.googleDocUrl?driveFileLabel(r.googleDocUrl,'Google Doc selected'):'No Google Doc selected';$('templateAttachmentUrl').value=r.attachmentUrl||'';$('templateAttachmentDisplay').value=r.attachmentUrl?driveFileLabel(r.attachmentUrl,'Attachment selected'):'No attachment selected';$('templateBody').value=r.body||'';$('templateDeleteBtn').disabled=false;$('templatePreviewTitle').textContent=r.name||'Preview';$('templatePreviewBody').innerHTML='<div class="templateEmpty"><span class="spinner"></span>Loading preview...</div>';
+      google.script.run.withSuccessHandler(function(preview){if(preview.html){$('templatePreviewBody').innerHTML='<iframe sandbox="allow-same-origin" srcdoc="'+esc(preview.html)+'"></iframe>';}else{$('templatePreviewBody').innerHTML='<div style="font-family:Arial,sans-serif;font-size:14px;line-height:1.6;white-space:pre-wrap">'+esc(preview.text||'No body available.')+'</div>';}}).withFailureHandler(function(){$('templatePreviewBody').innerHTML='<div class="templateEmpty">Preview unavailable.</div>';}).getTemplatePreview(Number(r.row),SESSION_TOKEN);
+      filterTemplates();
+    }
+    function resetTemplateForm(){templateState.selected=null;$('templateFormTitle').textContent='Create Template';$('templateName').value='';$('templateSubject').value='';$('templateDocUrl').value='';$('templateDocDisplay').value='No Google Doc selected';$('templateAttachmentUrl').value='';$('templateAttachmentDisplay').value='No attachment selected';$('templateAttachmentFile').value='';$('templateBody').value='';$('templateDeleteBtn').disabled=true;$('templatePreviewTitle').textContent='Preview';$('templatePreviewBody').innerHTML='<div class="templateEmpty">Select a template to preview.</div>';filterTemplates();}
+    function driveFileLabel(url,fallback){var id=extractDriveIdFromUrl(url);return id?'Drive file selected ('+id.slice(0,8)+'…)':fallback;}
+    function extractDriveIdFromUrl(url){var match=String(url||'').match(/[-\w]{25,}/);return match?match[0]:'';}
+    function openDrivePicker(purpose,onPicked){
+      var btn=purpose==='templateDoc'?'chooseTemplateDocBtn':(purpose==='templateAttachment'?'chooseTemplateAttachmentBtn':'chooseCampaignAttachmentBtn');
+      google.script.run.withSuccessHandler(function(config){
+        if(!config||!config.apiKey){toast('Google Drive Picker setup required: add VNS_DRIVE_PICKER_API_KEY in Apps Script Script Properties.');return;}
+        function showPicker(){
+          if(!window.google||!google.picker){toast('Google Drive Picker could not load. Check network access and Google Picker API setup.');return;}
+          var view=new google.picker.DocsView(google.picker.ViewId.DOCS).setIncludeFolders(false);
+          if(purpose==='templateDoc') view.setMimeTypes('application/vnd.google-apps.document');
+          var picker=new google.picker.PickerBuilder().addView(view).setOAuthToken(config.oauthToken).setDeveloperKey(config.apiKey).setOrigin(google.script.host.origin).setCallback(function(data){
+            if(data.action!==google.picker.Action.PICKED||!data.docs||!data.docs.length)return;
+            var file=data.docs[0];var url='https://drive.google.com/open?id='+file.id;
+            onPicked({id:file.id,name:file.name||'Selected file',url:url,mimeType:file.mimeType||''});
+          }).build();picker.setVisible(true);
+        }
+        if(window.google&&google.picker){showPicker();return;}
+        if(window.__vnsPickerLoading){toast('Google Drive Picker is loading. Please wait a moment.');return;}
+        window.__vnsPickerLoading=true;var script=document.createElement('script');script.src='https://apis.google.com/js/api.js';script.onload=function(){gapi.load('picker',{callback:function(){window.__vnsPickerLoading=false;showPicker();}});};script.onerror=function(){window.__vnsPickerLoading=false;toast('Could not load Google Drive Picker.');};document.head.appendChild(script);
+      }).withFailureHandler(function(e){toast(e.message||'Drive Picker setup could not be loaded.');}).getDrivePickerConfig(purpose,SESSION_TOKEN);
+    }
+    function uploadSelectedFile(file,purpose,onComplete,buttonId){
+      if(!file){toast('Please select a file first.');return;}
+      var maxBytes=10*1024*1024;if(file.size>maxBytes){toast('File is larger than 10 MB. Please choose a smaller file.');return;}
+      var button=$(buttonId);if(button)busy(button,'Uploading');
+      var reader=new FileReader();reader.onload=function(){var dataUrl=String(reader.result||'');var base64=dataUrl.split(',')[1]||'';
+        google.script.run.withSuccessHandler(function(result){if(button)idle(button);onComplete(result);toast('File uploaded to Google Drive.');}).withFailureHandler(function(e){if(button)idle(button);toast(e.message||'File upload failed.');}).uploadWorkspaceAttachment({name:file.name,mimeType:file.type||'application/octet-stream',base64:base64},purpose,SESSION_TOKEN);
+      };reader.onerror=function(){if(button)idle(button);toast('The selected file could not be read.');};reader.readAsDataURL(file);
+    }
+    function bindTemplateAttachmentUrl(result){$('templateAttachmentUrl').value=result.url;$('templateAttachmentDisplay').value=result.name||'Attachment selected';}
+    function bindTemplateDocFile(file){$('templateDocUrl').value=file.url;$('templateDocDisplay').value=file.name||'Google Doc selected';}
+    function bindCampaignAttachmentUrl(url,label){
+      if(!state.selected){toast('Select a pending recipient first.');return;}
+      google.script.run.withSuccessHandler(function(result){state.selected.hasAttachment=!!url;$('attachmentSource').value=url?(label||'Attachment selected'):'No attachment';updateSummary(state.selected);toast(result.message||'Recipient attachment updated.');}).withFailureHandler(function(e){toast(e.message||'Could not update recipient attachment.');}).setToolRowAttachment(Number(state.selected.row),url,SESSION_TOKEN);
+    }
+    function clearTemplateDoc(){ $('templateDocUrl').value='';$('templateDocDisplay').value='No Google Doc selected'; }
+    function clearTemplateAttachment(){ $('templateAttachmentUrl').value='';$('templateAttachmentDisplay').value='No attachment selected';$('templateAttachmentFile').value=''; }
+    function clearCampaignAttachment(){bindCampaignAttachmentUrl('','No attachment');}
+    function saveTemplate(){
+      var payload={row:templateState.selected?templateState.selected.row:0,name:$('templateName').value.trim(),subject:$('templateSubject').value.trim(),body:$('templateBody').value,googleDocUrl:$('templateDocUrl').value.trim(),attachmentUrl:$('templateAttachmentUrl').value.trim()};
+      if(!payload.name){toast('Template name is required.');return;}if(!payload.subject){toast('Subject is required.');return;}if(!payload.body&&!payload.googleDocUrl){toast('Add a body or Google Doc template URL.');return;}
+      var btn=$('templateSaveBtn');busy(btn,'Saving');google.script.run.withSuccessHandler(function(result){idle(btn);toast(result.message||'Template saved.');loadTemplates();resetTemplateForm();}).withFailureHandler(function(e){idle(btn);toast(e.message||'Template save failed.');}).saveEmailTemplate(payload,SESSION_TOKEN);
+    }
+    function deleteTemplate(){if(!templateState.selected)return;if(!confirm('Delete template "'+templateState.selected.name+'"?'))return;var btn=$('templateDeleteBtn');busy(btn,'Deleting');google.script.run.withSuccessHandler(function(result){idle(btn);toast(result.message||'Template deleted.');loadTemplates();resetTemplateForm();}).withFailureHandler(function(e){idle(btn);toast(e.message||'Template delete failed.');}).deleteEmailTemplate(Number(templateState.selected.row),SESSION_TOKEN);}
+
+    function loadCampaigns(){
+      $('campaignDirectoryBody').innerHTML='<tr><td colspan="6"><span class="spinner"></span>Loading campaign history...</td></tr>';
+      google.script.run.withSuccessHandler(renderCampaigns).withFailureHandler(function(e){toast(e.message||'Campaign history load failed.');$('campaignDirectoryBody').innerHTML='<tr><td colspan="6">Unable to load campaign history.</td></tr>';}).getCampaignsData(SESSION_TOKEN);
+    }
+    function renderCampaigns(data){
+      historyState.campaigns=data.campaigns||[]; historyState.logs=data.logs||[];
+      $('historyCampaignCount').textContent=historyState.campaigns.length;
+      $('historySentCount').textContent=historyState.campaigns.reduce(function(n,r){return n+Number(r.sent||0);},0);
+      $('historyFailedCount').textContent=historyState.campaigns.reduce(function(n,r){return n+Number(r.failed||0);},0);
+      $('historyLogCount').textContent=historyState.logs.length;
+      filterCampaigns();
+      if(historyState.selected){selectCampaign(historyState.selected.id);}
+    }
+    function filterCampaigns(){
+      var q=String($('campaignSearch').value||'').trim().toLowerCase(); var status=$('campaignStatusFilter').value;
+      var rows=historyState.campaigns.filter(function(r){if(q&&String(r.name||'').toLowerCase().indexOf(q)===-1)return false;if(status!=='all'&&r.status!==status)return false;return true;});
+      $('campaignResultCount').textContent=rows.length+' records'; var body=$('campaignDirectoryBody');
+      if(!rows.length){body.innerHTML='<tr><td colspan="6"><div class="historyEmpty">No matching campaigns found.</div></td></tr>';return;}
+      body.innerHTML=rows.map(function(r){var active=historyState.selected&&historyState.selected.id===r.id;var cls=r.status==='Completed'?'sent':(r.status==='Failed'||r.status==='Completed with Errors'?'failed':'pending');return '<tr class="campaignRow '+(active?'active':'')+'" data-campaign-id="'+esc(r.id)+'"><td><strong>'+esc(r.name||'Untitled')+'</strong></td><td>'+esc(r.mode||'—')+'</td><td><span class="status '+cls+'">'+esc(r.status||'Processing')+'</span></td><td>'+r.sent+'</td><td>'+r.failed+'</td><td>'+esc(r.createdAt)+'</td></tr>';}).join('');
+      document.querySelectorAll('[data-campaign-id]').forEach(function(el){el.addEventListener('click',function(){selectCampaign(this.getAttribute('data-campaign-id'));});});
+    }
+    function selectCampaign(id){
+      historyState.selected=historyState.campaigns.find(function(r){return String(r.id)===String(id);})||null; var campaign=historyState.selected;
+      if(!campaign){$('campaignDetail').innerHTML='<div class="historyEmpty">Select a campaign from the directory.</div>';filterCampaigns();return;}
+      var logs=historyState.logs.filter(function(r){return String(r.campaignId)===String(campaign.id);});
+      var logHtml=logs.length?logs.map(function(r){var cls=r.status==='Sent'?'sent':'failed';return '<div class="logItem"><div class="logItemTop"><strong>'+esc(r.name||'Unnamed')+'</strong><span class="status '+cls+'">'+esc(r.status)+'</span></div><small>'+esc(r.email)+' • '+esc(r.timestamp)+'</small><p>'+esc(r.message||'')+'</p></div>';}).join(''):'<div class="historyEmpty">No recipient log entries were recorded for this campaign.</div>';
+      $('campaignDetail').innerHTML='<div class="historyDetailHead"><strong>'+esc(campaign.name||'Untitled Campaign')+'</strong><span>'+esc(campaign.mode)+' • '+esc(campaign.createdAt)+' • '+esc(campaign.status)+'</span></div><div class="historyMetrics"><div class="historyMetric"><span>Total</span><strong>'+campaign.total+'</strong></div><div class="historyMetric"><span>Sent</span><strong>'+campaign.sent+'</strong></div><div class="historyMetric"><span>Failed</span><strong>'+campaign.failed+'</strong></div></div><div class="logList">'+logHtml+'</div>';
+      filterCampaigns();
+    }
+
+
+    /* Phase 6 — Reports & Analytics service calls. Reporting is read-only against the new activity log. */
+    function loadReportEmployees(){
+      google.script.run.withSuccessHandler(function(rows){
+        var el=$('reportEmployee'); el.innerHTML='<option value="">All Employees</option>'+(rows||[]).map(function(r){return '<option value="'+esc(r.email||r.name)+'">'+esc(r.name||r.email)+'</option>';}).join('');
+      }).withFailureHandler(function(e){toast(e.message||'Employee list load failed.');}).getReportEmployees(SESSION_TOKEN);
+    }
+    function getReportFilters(){return {startDate:$('reportStartDate').value,endDate:$('reportEndDate').value,employee:$('reportEmployee').value,status:$('reportStatus').value,includeTests:'false'};}
+    function loadReports(){
+      $('employeeReportBody').innerHTML='<tr><td colspan="5"><span class="spinner"></span>Loading report...</td></tr>';
+      google.script.run.withSuccessHandler(renderReports).withFailureHandler(function(e){toast(e.message||'Report load failed.');$('employeeReportBody').innerHTML='<tr><td colspan="5">Unable to load report.</td></tr>';}).getReportsData(getReportFilters(),SESSION_TOKEN);
+    }
+    function renderReports(data){
+      reportState.data=data;
+      $('reportTotal').textContent=data.summary.total; $('reportSent').textContent=data.summary.sent; $('reportFailed').textContent=data.summary.failed; $('reportRate').textContent=data.summary.successRate+'%';
+      $('reportRecipients').textContent=data.summary.uniqueRecipients; $('reportEmployees').textContent=data.summary.employees; $('reportCampaigns').textContent=data.summary.campaigns;
+      var f=data.filters; $('reportScope').textContent=f.startDate||f.endDate?'Filtered':'All'; $('reportGeneratedAt').textContent='Updated '+data.generatedAt;
+      var eb=$('employeeReportBody');
+      if(!data.employees.length) eb.innerHTML='<tr><td colspan="5"><div class="reportEmpty">No employee activity found for the selected filters.</div></td></tr>';
+      else eb.innerHTML=data.employees.map(function(r){return '<tr><td><strong>'+esc(r.employeeName||'Unknown')+'</strong><br><span style="color:#718096">'+esc(r.employeeEmail||'Not available')+'</span></td><td>'+r.total+'</td><td>'+r.sent+'</td><td>'+r.failed+'</td><td><strong>'+r.successRate+'%</strong><div class="employeeBar"><i style="width:'+Math.min(100,Number(r.successRate))+'%"></i></div></td></tr>';}).join('');
+      var cb=$('campaignReportBody'); cb.innerHTML=data.campaigns.length?data.campaigns.map(function(r){return '<tr><td><strong>'+esc(r.campaignName)+'</strong></td><td>'+r.total+'</td><td>'+r.sent+'</td><td>'+r.failed+'</td><td>'+r.successRate+'%</td></tr>';}).join(''):'<tr><td colspan="5"><div class="reportEmpty">No campaign activity found.</div></td></tr>';
+      var tb=$('trendReportBody'); tb.innerHTML=data.trend.length?data.trend.map(function(r){return '<tr><td>'+esc(r.date)+'</td><td>'+r.total+'</td><td>'+r.sent+'</td><td>'+r.failed+'</td></tr>';}).join(''):'<tr><td colspan="4"><div class="reportEmpty">No daily activity found.</div></td></tr>';
+      var rb=$('recentReportBody'); rb.innerHTML=data.recent.length?data.recent.slice(0,30).map(function(r){var cls=r.status.toLowerCase()==='sent'?'sent':'failed';return '<tr><td><strong>'+esc(r.employeeName)+'</strong></td><td>'+esc(r.recipientName||'Unnamed')+'<br><span style="color:#718096">'+esc(r.recipientEmail)+'</span></td><td><span class="status '+cls+'">'+esc(r.status)+'</span></td><td>'+esc(r.timestampLabel)+'</td></tr>';}).join(''):'<tr><td colspan="4"><div class="reportEmpty">No activity found.</div></td></tr>';
+    }
+    function clearReportFilters(){ $('reportStartDate').value=''; $('reportEndDate').value=''; $('reportEmployee').value=''; $('reportStatus').value='all'; loadReports(); }
+    function exportReport(format,button){
+      busy(button,format==='xlsx'?'Preparing Excel':'Preparing PDF');
+      google.script.run.withSuccessHandler(function(result){idle(button);var box=$('reportExportLink');box.style.display='block';box.innerHTML='Report ready: <a href="'+esc(result.url)+'" target="_blank" rel="noopener">Open '+(format==='xlsx'?'Excel':'PDF')+' report</a>';toast((format==='xlsx'?'Excel':'PDF')+' report created successfully.');}).withFailureHandler(function(e){idle(button);toast(e.message||'Report export failed.');}).exportReports(getReportFilters(),format,SESSION_TOKEN);
+    }
+
+    /* Phase 5 — Settings service calls. No existing module state is reused or overwritten. */
+    function loadSettings(){
+      google.script.run.withSuccessHandler(renderSettings).withFailureHandler(function(e){toast(e.message||'Settings load failed.');}).getWorkspaceSettings(SESSION_TOKEN);
+    }
+    function renderSettings(data){
+      var p=data&&data.profile?data.profile:{}; var c=data&&data.campaign?data.campaign:{}; var s=data&&data.system?data.system:{};
+      $('settingsCompanyName').value=p.companyName||''; $('settingsProductName').value=p.productName||''; $('settingsSupportEmail').value=p.supportEmail||''; $('settingsWebsite').value=p.website||''; $('settingsDefaultCampaignName').value=c.defaultCampaignName||'';
+      $('settingsSender').textContent=s.sender||'Not available'; $('settingsTimezone').textContent=s.timezone||'—'; $('settingsToolSheet').textContent=s.toolSheet||'—'; $('settingsTemplateSheet').textContent=s.templateSheet||'—'; $('settingsCampaignSheet').textContent=s.campaignSheet||'—';
+    }
+    function saveSettings(){
+      var payload={profile:{companyName:$('settingsCompanyName').value.trim(),productName:$('settingsProductName').value.trim(),supportEmail:$('settingsSupportEmail').value.trim(),website:$('settingsWebsite').value.trim()},campaign:{defaultCampaignName:$('settingsDefaultCampaignName').value.trim()}};
+      if(!payload.profile.companyName){toast('Company name is required.');return;} if(!payload.profile.productName){toast('Product name is required.');return;}
+      var btn=$('settingsSaveBtn');busy(btn,'Saving'); google.script.run.withSuccessHandler(function(result){idle(btn);toast(result.message||'Settings saved.');renderSettings(result.settings);}).withFailureHandler(function(e){idle(btn);toast(e.message||'Settings save failed.');}).saveWorkspaceSettings(payload,SESSION_TOKEN);
+    }
+    function resetSettings(){
+      if(!confirm('Restore workspace settings to the default values?'))return; var btn=$('settingsResetBtn');busy(btn,'Restoring'); google.script.run.withSuccessHandler(function(result){idle(btn);toast(result.message||'Defaults restored.');renderSettings(result.settings);}).withFailureHandler(function(e){idle(btn);toast(e.message||'Reset failed.');}).resetWorkspaceSettings(SESSION_TOKEN);
+    }
+
+    /* Phase 7 — Users & Roles client service. Existing modules are not reused or overwritten. */
+    var usersState={rows:[],context:null};
+    function loadUsers(){
+      google.script.run.withSuccessHandler(function(ctx){
+        usersState.context=ctx||{};
+        $('myRole').textContent=ctx&&ctx.role?ctx.role:'Admin';
+        $('userAccessState').textContent=ctx&&ctx.configured?(ctx.allowed?'Access Controlled':'Access Restricted'):'Setup Mode';
+        if(ctx&&!ctx.allowed){$('userDirectoryBody').innerHTML='<tr><td colspan="6"><div class="reportEmpty">Your account is not active in Workspace Users.</div></td></tr>';return;}
+        google.script.run.withSuccessHandler(renderUsers).withFailureHandler(function(e){toast(e.message||'Users load failed.');}).getWorkspaceUsers(SESSION_TOKEN);
+      }).withFailureHandler(function(e){toast(e.message||'Access check failed.');}).getWorkspaceAccessContext(SESSION_TOKEN);
+    }
+    function renderUsers(data){
+      usersState.rows=(data&&data.rows)||[]; $('usersTotal').textContent=data.total||0; $('usersActive').textContent=data.active||0; $('usersInactive').textContent=data.inactive||0; filterUsers();
+    }
+    function filterUsers(){
+      var q=($('userSearch').value||'').toLowerCase().trim(), status=$('userStatusFilter').value;
+      var rows=usersState.rows.filter(function(r){return (!q || (r.name+' '+r.email).toLowerCase().indexOf(q)!==-1) && (status==='all'||r.status===status);});
+      $('userDirectoryBody').innerHTML=rows.length?rows.map(function(r){return '<tr><td><strong>'+esc(r.name)+'</strong></td><td>'+esc(r.email)+'</td><td><span class="roleBadge">'+esc(r.role)+'</span></td><td><span class="'+(r.status==='Active'?'activeBadge':'inactiveBadge')+'">'+esc(r.status)+'</span></td><td>'+esc(r.updatedAt||'—')+'</td><td><button class="btn" onclick="editWorkspaceUser(\''+escAttr(r.id)+'\')">Edit</button> '+(r.status==='Active'?'<button class="btn danger" onclick="changeUserStatus(\''+escAttr(r.id)+'\',\'Inactive\')">Disable</button>':'<button class="btn" onclick="changeUserStatus(\''+escAttr(r.id)+'\',\'Active\')">Enable</button>')+'</td></tr>';}).join(''):'<tr><td colspan="6"><div class="reportEmpty">No users found.</div></td></tr>';
+    }
+    function escAttr(v){return String(v||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+    function editWorkspaceUser(id){var r=usersState.rows.filter(function(x){return x.id===id;})[0];if(!r)return;$('userId').value=r.id;$('userName').value=r.name;$('userEmail').value=r.email;$('userRole').value=r.role;$('userStatus').value=r.status;$('userFormTitle').textContent='Edit User';window.scrollTo({top:0,behavior:'smooth'});}
+    function clearUserForm(){$('userId').value='';$('userName').value='';$('userEmail').value='';$('userRole').value='Employee';$('userStatus').value='Active';$('userFormTitle').textContent='Add User';}
+    function saveUser(){var ctx=usersState.context;if(ctx&&!ctx.allowed){toast('Access denied.');return;}var payload={id:$('userId').value,name:$('userName').value.trim(),email:$('userEmail').value.trim(),role:$('userRole').value,status:$('userStatus').value};var btn=$('saveUserBtn');busy(btn,'Saving');google.script.run.withSuccessHandler(function(r){idle(btn);toast(r.message||'User saved.');clearUserForm();renderUsers(r.users);}).withFailureHandler(function(e){idle(btn);toast(e.message||'User save failed.');}).saveWorkspaceUser(payload,SESSION_TOKEN);}
+    function changeUserStatus(id,status){if(!confirm(status==='Active'?'Enable this user?':'Disable this user?'))return;google.script.run.withSuccessHandler(function(r){toast(r.message||'Status updated.');renderUsers(r.users);}).withFailureHandler(function(e){toast(e.message||'Status update failed.');}).setWorkspaceUserStatus(id,status,SESSION_TOKEN);}
+
+    var workspaceAccess=null;
+    function applyAccessContext(ctx){
+      workspaceAccess=ctx||null;
+      var isEmployee=String(ctx&&ctx.role||'').toLowerCase()==='employee';
+      var employeeHiddenViews=['settings','reports','users'];
+      document.querySelectorAll('.nav button[data-view]').forEach(function(btn){
+        var view=btn.dataset.view;
+        var allowed=!ctx||!ctx.configured||ctx.allowed!==false && ctx.permissions && ctx.permissions[view]===true;
+        if(isEmployee && employeeHiddenViews.indexOf(view)!==-1) allowed=false;
+        btn.hidden=!allowed;
+      });
+      if(ctx&&ctx.configured&&!ctx.allowed){
+        document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
+        $('pageTitle').textContent='Access Restricted';
+        toast('Your account is not active in Vns.WorkSpace.');
+      }
+    }
+    function canOpenView(view){
+      if(!workspaceAccess) return true;
+      if(workspaceAccess.configured && !workspaceAccess.allowed) return false;
+      return !workspaceAccess.configured || workspaceAccess.permissions[view]===true;
+    }
+    function setView(view){
+      if(!canOpenView(view)){toast('You do not have access to this module.');return;}
+      document.querySelectorAll('.nav button').forEach(function(b){b.classList.toggle('active',b.dataset.view===view);});document.querySelectorAll('.view').forEach(function(v){v.classList.toggle('active',v.id==='view-'+view);});var titles={dashboard:'Email Operations Dashboard',send:'Send Campaign',recipients:'Recipient Management',templates:'Template Library',campaigns:'Campaign History',settings:'Workspace Settings',reports:'Reports & Analytics',users:'Users & Roles'};$('pageTitle').textContent=titles[view]||'Email Operations Dashboard';$('sidebar').classList.remove('open');if(view==='dashboard'||view==='send') loadDashboard();if(view==='recipients') loadRecipients();if(view==='templates') loadTemplates();if(view==='campaigns') loadCampaigns();if(view==='settings') loadSettings();if(view==='reports'){loadReportEmployees();loadReports();}if(view==='users'){loadUsers();}}
+
+    document.querySelectorAll('.nav button').forEach(function(b){b.addEventListener('click',function(){setView(b.dataset.view);});});
+    $('refreshBtn').addEventListener('click',loadDashboard); $('quickRefresh').addEventListener('click',loadDashboard); $('menuBtn').addEventListener('click',function(){$('sidebar').classList.toggle('open');});
+    $('sendAllBtn').addEventListener('click',function(){sendAll($('sendAllBtn'));}); $('quickPending').addEventListener('click',function(){sendAll($('quickPending'));}); $('viewSendBtn').addEventListener('click',function(){setView('send');});
+    $('recipientSelect').addEventListener('change',function(){selectRecipient(this.value);});
+    $('toContentBtn').addEventListener('click',function(){if(!state.selected){toast('Select a pending recipient first.');return;}setStep(2);});
+    $('backRecipientsBtn').addEventListener('click',function(){setStep(1);}); $('toRecipientsFromContent').addEventListener('click',function(){setStep(1);}); $('toReviewBtn').addEventListener('click',function(){if(!state.selected){toast('Select a recipient first.');return;}setStep(3);}); $('backContentBtn').addEventListener('click',function(){setStep(2);}); $('backContentBtn2').addEventListener('click',function(){setStep(2);});
+    $('campaignTemplateSelect').addEventListener('change',function(){state.selectedTemplateRow=Number(this.value||0);applyCampaignTemplate();});
+    $('sendSelectedBtn').addEventListener('click',sendSelected); $('sendTestBtn').addEventListener('click',sendTest);
+    $('refreshRecipientsBtn').addEventListener('click',loadRecipients); $('recipientSearch').addEventListener('input',filterRecipientDirectory); $('recipientFilter').addEventListener('change',filterRecipientDirectory); $('recipientCsv').addEventListener('change',handleRecipientFile); $('importRecipientsBtn').addEventListener('click',importRecipientCsv); $('importSheetBtn').addEventListener('click',importGoogleSheet); $('importPasteBtn').addEventListener('click',importPastedData);
+    $('refreshTemplatesBtn').addEventListener('click',loadTemplates); $('templateSearch').addEventListener('input',filterTemplates); $('templateResetBtn').addEventListener('click',resetTemplateForm); $('templateSaveBtn').addEventListener('click',saveTemplate); $('templateDeleteBtn').addEventListener('click',deleteTemplate);
+    $('chooseTemplateDocBtn').addEventListener('click',function(){openDrivePicker('templateDoc',bindTemplateDocFile);});$('clearTemplateDocBtn').addEventListener('click',clearTemplateDoc);$('chooseTemplateAttachmentBtn').addEventListener('click',function(){openDrivePicker('templateAttachment',function(file){bindTemplateAttachmentUrl(file);});});$('clearTemplateAttachmentBtn').addEventListener('click',clearTemplateAttachment);$('uploadTemplateAttachmentBtn').addEventListener('click',function(){$('templateAttachmentFile').click();});$('templateAttachmentFile').addEventListener('change',function(){var file=this.files&&this.files[0];uploadSelectedFile(file,'templateAttachment',bindTemplateAttachmentUrl,'uploadTemplateAttachmentBtn');});
+    $('chooseCampaignAttachmentBtn').addEventListener('click',function(){openDrivePicker('campaignAttachment',function(file){bindCampaignAttachmentUrl(file.url,file.name);});});$('uploadCampaignAttachmentBtn').addEventListener('click',function(){$('campaignAttachmentFile').click();});$('campaignAttachmentFile').addEventListener('change',function(){var file=this.files&&this.files[0];uploadSelectedFile(file,'campaignAttachment',function(result){bindCampaignAttachmentUrl(result.url,result.name);},'uploadCampaignAttachmentBtn');});$('clearCampaignAttachmentBtn').addEventListener('click',clearCampaignAttachment);
+    $('refreshCampaignsBtn').addEventListener('click',loadCampaigns); $('campaignSearch').addEventListener('input',filterCampaigns); $('campaignStatusFilter').addEventListener('change',filterCampaigns);
+    $('refreshReportsBtn').addEventListener('click',loadReports); $('clearReportFiltersBtn').addEventListener('click',clearReportFilters); $('exportExcelBtn').addEventListener('click',function(){exportReport('xlsx',this);}); $('exportPdfBtn').addEventListener('click',function(){exportReport('pdf',this);}); $('refreshSettingsBtn').addEventListener('click',loadSettings); $('settingsSaveBtn').addEventListener('click',saveSettings); $('settingsResetBtn').addEventListener('click',resetSettings); $('refreshUsersBtn').addEventListener('click',loadUsers); $('userSearch').addEventListener('input',filterUsers); $('userStatusFilter').addEventListener('change',filterUsers); $('clearUserFormBtn').addEventListener('click',clearUserForm); $('saveUserBtn').addEventListener('click',saveUser);
+    google.script.run.withSuccessHandler(function(ctx){applyAccessContext(ctx); if(ctx&&ctx.allowed){ $('userNameLabel').textContent=ctx.name||'Workspace User'; $('userRoleLabel').textContent=ctx.role||'Employee'; } if(!ctx||ctx.allowed!==false){setView('dashboard');}}).withFailureHandler(function(e){toast(e.message||'Session expired.'); setTimeout(function(){window.top.location.href='?logout=1';},900);}).getWorkspaceAccessContext(SESSION_TOKEN);
+    $('logoutBtn').addEventListener('click',function(){google.script.run.withSuccessHandler(function(){google.script.run.withSuccessHandler(function(url){window.top.location.href=url+'?logout=1&session='+encodeURIComponent(SESSION_TOKEN);}).getWebAppUrl();}).logoutSession(SESSION_TOKEN);});
+  </script>
+</body>
+</html>

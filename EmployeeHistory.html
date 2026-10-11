@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vns.WorkSpace — Employee History</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#12213f}
+    .wrap{max-width:1400px;margin:auto;padding:28px}
+    .top{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:22px}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:.12em;color:#2864e8}
+    h1{margin:6px 0;font-size:30px}
+    .sub{color:#71809b;font-size:13px}
+    .card{background:#fff;border:1px solid #e1e8f2;border-radius:18px;box-shadow:0 12px 35px rgba(28,52,90,.07)}
+    .filters{padding:20px;display:grid;grid-template-columns:1fr 1fr 1.4fr auto;gap:14px;align-items:end}
+    label{display:block;font-size:12px;font-weight:700;margin-bottom:7px}
+    input,select{width:100%;height:44px;border:1px solid #d8e1ee;border-radius:10px;padding:0 12px;font-size:14px;background:#fff}
+    button{height:44px;border:0;border-radius:10px;padding:0 18px;font-weight:750;cursor:pointer}
+    .primary{background:#2864e8;color:#fff}.secondary{background:#eef3fb;color:#17335f}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0}
+    .kpi{padding:20px;position:relative;overflow:hidden}.kpi:after{content:"";position:absolute;width:90px;height:90px;border-radius:50%;right:-30px;top:-30px;background:rgba(255,255,255,.16)}
+    .kpi:nth-child(1){background:linear-gradient(135deg,#2864e8,#5c8df4);color:#fff}
+    .kpi:nth-child(2){background:linear-gradient(135deg,#0f9f6e,#35c98e);color:#fff}
+    .kpi:nth-child(3){background:linear-gradient(135deg,#8055d8,#aa7cf0);color:#fff}
+    .kpi:nth-child(4){background:linear-gradient(135deg,#df536b,#f47e91);color:#fff}
+    .kpi small{display:block;opacity:.85}.num{font-size:30px;font-weight:850;margin-top:7px}
+    .report{padding:20px}.reportHead{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:15px}
+    .tableWrap{overflow:auto;border:1px solid #e1e8f2;border-radius:12px}
+    table{width:100%;border-collapse:collapse;min-width:1050px}
+    th,td{text-align:left;padding:12px 13px;border-bottom:1px solid #edf1f6;font-size:12px;white-space:nowrap}
+    th{background:#f8faff;color:#60708c;font-size:11px;letter-spacing:.04em}
+    .pill{display:inline-flex;padding:5px 9px;border-radius:999px;font-weight:750;background:#edf4ff;color:#2864e8}
+    .empty{text-align:center;padding:45px;color:#74829b}
+    .status{font-weight:750}.status.sent{color:#099268}.status.failed{color:#d9485f}
+    @media(max-width:900px){.filters{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:1fr 1fr}.top{flex-direction:column}}
+    @media(max-width:560px){.wrap{padding:15px}.filters,.kpis{grid-template-columns:1fr}.actions button{flex:1}h1{font-size:24px}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <div class="eyebrow">VNS.WORKSPACE • SUPER ADMIN</div>
+      <h1>Employee History</h1>
+      <div class="sub">Review complete employee activity for a selected date range and export the report.</div>
+    </div>
+    <div class="actions">
+      <button class="secondary" onclick="load()">↻ Refresh</button>
+    </div>
+  </div>
+
+  <section class="card filters">
+    <div><label>From Date</label><input id="from" type="date"></div>
+    <div><label>To Date</label><input id="to" type="date"></div>
+    <div><label>Employee</label><select id="employee"><option value="">All Employees</option></select></div>
+    <div><button class="primary" onclick="load()">Generate Report</button></div>
+  </section>
+
+  <section class="kpis">
+    <div class="card kpi"><small>Total Activity</small><div class="num" id="total">0</div></div>
+    <div class="card kpi"><small>Sent Successfully</small><div class="num" id="sent">0</div></div>
+    <div class="card kpi"><small>Failed</small><div class="num" id="failed">0</div></div>
+    <div class="card kpi"><small>Success Rate</small><div class="num" id="rate">0%</div></div>
+  </section>
+
+  <section class="card report">
+    <div class="reportHead">
+      <div><strong>Employee Work History</strong><div class="sub" id="rangeText">Select a date range.</div></div>
+      <div class="actions">
+        <button class="secondary" onclick="exportFile('excel')">↓ Excel</button>
+        <button class="primary" onclick="exportFile('pdf')">↓ PDF</button>
+      </div>
+    </div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr>
+          <th>Date / Time</th><th>Employee</th><th>Department</th><th>Action</th>
+          <th>Campaign</th><th>Recipient</th><th>Subject</th><th>Status</th><th>Remarks</th>
+        </tr></thead>
+        <tbody id="body"><tr><td colspan="9" class="empty">Loading report...</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+  function $(id){return document.getElementById(id)}
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+  function iso(d){return d.toISOString().slice(0,10)}
+  function init(){
+    const now=new Date(), first=new Date(now.getFullYear(),now.getMonth(),1);
+    $('from').value=iso(first); $('to').value=iso(now);
+    google.script.run.withSuccessHandler(renderEmployees).withFailureHandler(showError).getEmployeeDirectory();
+    load();
+  }
+  function renderEmployees(list){
+    const s=$('employee'); s.innerHTML='<option value="">All Employees</option>'+
+      (list||[]).map(x=>'<option value="'+esc(x.employeeId)+'">'+esc(x.name||x.employeeId)+' — '+esc(x.employeeId)+'</option>').join('');
+  }
+  function load(){
+    $('body').innerHTML='<tr><td colspan="9" class="empty">Loading report...</td></tr>';
+    google.script.run.withSuccessHandler(render).withFailureHandler(showError)
+      .getEmployeeHistoryReport($('from').value,$('to').value,$('employee').value);
+  }
+  function render(r){
+    $('total').textContent=r.total; $('sent').textContent=r.sent; $('failed').textContent=r.failed; $('rate').textContent=r.successRate+'%';
+    $('rangeText').textContent=r.from+' → '+r.to+(r.employeeId!=='ALL'?' • '+r.employeeId:' • All Employees');
+    if(!r.records.length){$('body').innerHTML='<tr><td colspan="9" class="empty">No activity found for the selected filters.</td></tr>';return}
+    $('body').innerHTML=r.records.map(x=>{
+      const sent=/sent/i.test(x.status), fail=/fail|invalid|error/i.test(x.status);
+      return '<tr><td>'+esc(x.timestamp)+'</td><td><strong>'+esc(x.employeeName)+'</strong><br><small>'+esc(x.employeeId)+'</small></td><td>'+esc(x.department)+'</td><td>'+esc(x.action)+'</td><td>'+esc(x.campaign)+'</td><td>'+esc(x.recipient)+'</td><td>'+esc(x.subject)+'</td><td><span class="status '+(sent?'sent':fail?'failed':'')+'">'+esc(x.status)+'</span></td><td>'+esc(x.remarks)+'</td></tr>'
+    }).join('')
+  }
+  function exportFile(type){
+    const fn=type==='excel'?'exportEmployeeHistoryExcel':'exportEmployeeHistoryPdf';
+    google.script.run.withSuccessHandler(r=>{if(r&&r.url) window.open(r.url,'_blank');}).withFailureHandler(showError)
+      [fn]($('from').value,$('to').value,$('employee').value);
+  }
+  function showError(e){alert((e&&e.message)||'Report request failed.')}
+  document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>

@@ -4,15 +4,15 @@ A web-based email campaign management tool built with Google Apps Script, Google
 
 ## Project Preview
 Login Page
-![Login Page](Screen%20shot/Login_Page.png)
+![Login_Page](Screen%20shot/Login_Page.png)
 Main Dashboard
 ![Main Dashboard](Screen%20shot/Dashboard.png)
 Admin Dashboard
-![Admin Dashboard](Screen%20shot/Admin_Dashboard.png)
+![Admin_Dashboard](Screen%20shot/Admin_Dashboard.png)
 Send Campaign
-![Send Campaign](Screen%20shot/Send_Compaign.png)
+![Send_Campaign](Screen%20shot/Send_Compaign.png)
 Template Library
-![Template Library](Screen%20shot/Template_Library.png)
+![Template_Library](Screen%20shot/Template_Library.png)
 
 ## Live Demo
 

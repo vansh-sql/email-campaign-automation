@@ -29,10 +29,9 @@ var COL_STATUS = 7;      // G: Sending status
 
 // Sender display-name mapping used by the existing mail engine.
 var SENDER_NAME_MAP = {
-  'support@veeere.com': 'Veeere',
-  'mkt.ssifpl@gmail.com': 'Hemant Churuwala',
-  'bdmexport.ssifpl@gmail.com': 'Deepak Brand',
-  'mis.mgr@ssifpl.com': 'Deepak Brand'
+  'singhv@gmail.com': 'Vansh Pratap Singh',
+  'rajputboyyvansh.com': 'kunal Singh',
+  'vanshpiparpur@gmail.com': 'Vinod'
 };
 
 /**

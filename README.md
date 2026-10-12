@@ -3,16 +3,22 @@
 A web-based email campaign management tool built with Google Apps Script, Google Sheets, Gmail services, and HTML/CSS/JavaScript. Vns.WorkSpace brings recipient selection, email composition, attachment handling, and campaign tracking into one interface.
 
 ## Project Preview
-Login Page
-![Login_Page](Screen%20shot/Login_Page.png)
-Main Dashboard
-![Main Dashboard](Screen%20shot/Dashboard.png)
-Admin Dashboard
-![Admin_Dashboard](Screen%20shot/Admin_Dashboard.png)
-Send Campaign
-![Send_Campaign](Screen%20shot/Send_Compaign.png)
-Template Library
-![Template_Library](Screen%20shot/Template_Library.png)
+## Project Preview
+
+### Login Page
+![Login Page](screenshots/Login_Page.png)
+
+### Main Dashboard
+![Main Dashboard](screenshots/Dashboard.png)
+
+### Admin Dashboard
+![Admin Dashboard](screenshots/Admin_Dashboard.png)
+
+### Send Campaign
+![Send Campaign](screenshots/Send_Compaign.png)
+
+### Template Library
+![Template Library](screenshots/Template_Library.png)
 
 ## Live Demo
 

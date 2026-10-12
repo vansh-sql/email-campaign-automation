@@ -18,6 +18,8 @@ A web-based email campaign management tool built with Google Apps Script, Google
 
 ### Template Library
 ![Template Library](screenshots/Template_Library.png)
+### Recipient_Management_Email
+![Recipient_Management_Email](screenshots/Recipient_Management_Email.png)
 
 ## Live Demo
 

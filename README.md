@@ -3,7 +3,6 @@
 A web-based email campaign management tool built with Google Apps Script, Google Sheets, Gmail services, and HTML/CSS/JavaScript. Vns.WorkSpace brings recipient selection, email composition, attachment handling, and campaign tracking into one interface.
 
 ## Project Preview
-## Project Preview
 
 ### Login Page
 ![Login Page](screenshots/Login_Page.png)
